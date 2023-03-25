@@ -4,6 +4,34 @@
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.STLParserLib = {}));
 })(this, (function (exports) { 'use strict';
 
+    /******************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
+    // Parsing code is based on:
+    // https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js
     var STLParser = /** @class */ (function () {
         function STLParser() {
         }
@@ -227,7 +255,7 @@
          * Returns a copy of the stl data, with coincident vertices merged.
          */
         STLParser.mergeVertices = function (stlData) {
-            var vertices = stlData.vertices, faceNormals = stlData.faceNormals;
+            var vertices = stlData.vertices; stlData.faceNormals;
             var numFaces = vertices.length / 9;
             var verticesMerged = [];
             var facesIndexed = new Uint32Array(numFaces * 3);
@@ -254,11 +282,7 @@
                     }
                 }
             }
-            return {
-                vertices: verticesMerged,
-                faceNormals: faceNormals,
-                faceIndices: facesIndexed,
-            };
+            return __assign(__assign({}, stlData), { vertices: verticesMerged, faceIndices: facesIndexed });
         };
         /**
          * Returns the edges in the stl data (without duplicates).

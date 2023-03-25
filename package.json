@@ -13,6 +13,8 @@
 	"3d model",
     "mesh",
 	"import",
+	"binary",
+	"ascii",
 	"typescript"
   ],
   "scripts": {

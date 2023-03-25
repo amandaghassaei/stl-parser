@@ -297,8 +297,8 @@ export class STLParser {
 			}
 		}
 		return {
+			...stlData,
 			vertices: verticesMerged,
-			faceNormals,
 			faceIndices: facesIndexed,
 		};
 	}
