@@ -1,10 +1,10 @@
 # stl-parser
 [![stl-parser main image](./main-image.jpg)](https://apps.amandaghassaei.com/stl-parser/demo/)
 
-[![NPM Package](https://img.shields.io/npm/v/stl-parser)](https://www.npmjs.com/package/stl-parser)
-[![Build Size](https://img.shields.io/bundlephobia/min/stl-parser)](https://bundlephobia.com/result?p=stl-parser)
-[![NPM Downloads](https://img.shields.io/npm/dw/stl-parser)](https://www.npmtrends.com/stl-parser)
-[![License](https://img.shields.io/npm/l/stl-parser)](https://github.com/amandaghassaei/stl-parser/blob/main/LICENSE.txt)
+[![NPM Package](https://img.shields.io/npm/v/@amandaghassaei/stl-parser)](https://www.npmjs.com/package/@amandaghassaei/stl-parser)
+[![Build Size](https://img.shields.io/bundlephobia/min/@amandaghassaei/stl-parser)](https://bundlephobia.com/result?p=@amandaghassaei/stl-parser)
+[![NPM Downloads](https://img.shields.io/npm/dw/@amandaghassaei/stl-parser)](https://www.npmtrends.com/@amandaghassaei/stl-parser)
+[![License](https://img.shields.io/npm/l/@amandaghassaei/stl-parser)](https://github.com/amandaghassaei/stl-parser/blob/main/LICENSE.txt)
 
 STL format parser, based on [Threejs STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js), written in TypeScript.
 
@@ -21,7 +21,7 @@ The .stl file format is used for storing 3D triangulated meshes.  This library d
 ### Install via npm
 
 ```sh
-npm install stl-parser
+npm install @amandaghassaei/stl-parser
 ```
 
 and import into your project:

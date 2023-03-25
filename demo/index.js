@@ -11,11 +11,12 @@ const PARAMS = {
 	color: '#8bc0f0',
 	background: '#eeeeee',
 	wireframe: '#000000',
+	mergeVertices: true,
 	highlightedVertex: -1,
 	url: TEAPOT_URL,
 };
 
-let mesh, wireframe;
+let mesh, wireframe, rawSTLData;
 
 // Create a new parser instance,
 const parser = new STLParser();
@@ -67,6 +68,11 @@ pane.addButton({
 }).on('click', () => {
 	fileInput.click();
 });
+pane.addInput(PARAMS, 'mergeVertices', {
+	label: 'Merge Vertices',
+}).on('change', () => {
+	if (rawSTLData) initThreeJSGeometry(rawSTLData);
+});
 pane.addButton({
 	title: 'View Code on GitHub',
 }).on('click', () => {
@@ -78,7 +84,10 @@ function makeHighlightedVertexSlider(max) {
 	return pane.addInput(PARAMS, 'highlightedVertex', { label: 'Highlighted Vertex', min: -1, max, step: 1 }).on('change', () => {
 		const index = PARAMS.highlightedVertex;
 		vertexHighlighter.visible = index >= 0;
-		if (index < 0 || !mesh) return;
+		if (index < 0 || !mesh) {
+			render();
+			return;
+		}
 		const array = mesh.geometry.getAttribute('position').array;
 		vertexHighlighter.position.set(array[3 * index], array[3 * index + 1], array[3 * index + 2]);
 		render();
@@ -100,7 +109,7 @@ function initMesh(positionsAttribute, faceIndices) {
 
 	// Create a buffer geometry from the position and index arrays.
 	const geometry = new THREE.BufferGeometry();
-	geometry.setIndex(new THREE.BufferAttribute(faceIndices, 1));
+	if (faceIndices) geometry.setIndex(new THREE.BufferAttribute(faceIndices, 1));
 	geometry.setAttribute('position', positionsAttribute);
 	geometry.computeVertexNormals();
 
@@ -110,6 +119,7 @@ function initMesh(positionsAttribute, faceIndices) {
 		polygonOffset: true,
 		polygonOffsetFactor: 1,
 		polygonOffsetUnits: 1,
+		flatShading: true,
 	});
 	const threeMesh = new THREE.Mesh(geometry, material);
 	scene.add(threeMesh);
@@ -133,7 +143,8 @@ function initWireframe(positionsAttribute, edges) {
 }
 
 function initThreeJSGeometry(stlData) {
-	stlData = STLParser.mergeVertices(stlData);
+	rawSTLData = stlData;
+	if (PARAMS.mergeVertices) stlData = STLParser.mergeVertices(stlData);
 	const {
 		vertices,
 		faceIndices,
@@ -141,11 +152,11 @@ function initThreeJSGeometry(stlData) {
 	const edges = STLParser.calculateEdges(stlData);
 
 	setInfo(`${(vertices.length / 3).toLocaleString()} vertices<br/>
-		${(faceIndices.length / 3).toLocaleString()} faces<br/>
+		${(faceIndices ? faceIndices.length / 3 : vertices.length / 9).toLocaleString()} faces<br/>
 		${(edges.length / 2).toLocaleString()} edges`);
 
 	// Share positions attribute between meshes.
-	const positions = vertices.constructor === Float32Array ? vertices : new Float32Array(vertices);
+	const positions = new Float32Array(vertices);
 	const positionsAttribute = new THREE.BufferAttribute(positions, 3);
 
 	mesh = initMesh(positionsAttribute, faceIndices);
@@ -164,6 +175,8 @@ function initThreeJSGeometry(stlData) {
 	PARAMS.highlightedVertex = -1;
 	vertexHighlighter.visible = false;
 	highlightedVertexSlider = makeHighlightedVertexSlider(vertices.length / 3 - 1);
+
+	controls.reset();
 
 	// Render.
 	render();
@@ -189,7 +202,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.position.set(10, 10, 10);
+directionalLight.position.set(1, 1, 1);
 camera.add(directionalLight);
 
 // Init an object to highlight a vertex.
@@ -221,7 +234,7 @@ document.body.appendChild(renderer.domElement);
 
 // Add orbit controls.
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enablePan = false;
+// controls.enablePan = false;
 controls.maxZoom = 100;
 controls.minZoom = 0.5;
 controls.addEventListener('change', () => {
