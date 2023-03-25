@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export type STLData = {
     vertices: Float32Array | number[];
     faceNormals: Float32Array | number[];
@@ -13,19 +14,20 @@ export declare class STLParser {
     private static _ensureBinary;
     private static _ensureString;
     private _parse;
+    private static _isURL;
     /**
      * Parse stl file synchronously (node only).
      */
-    parseSync(url: string): STLData;
+    parseSync(urlOrData: string | ArrayBuffer | Buffer): STLData;
     /**
      * Parse stl file asynchronously (returns Promise).
      */
-    parseAsync(urlOrFile: string | File): Promise<STLData>;
+    parseAsync(urlOrFile: string | File | ArrayBuffer | Buffer): Promise<STLData>;
     /**
      * Parse the .stl file at the specified file path of File object.
      * Made this compatible with Node and the browser, maybe there is a better way?
      */
-    parse(urlOrFile: string | File, callback: (stlData: STLData) => void): void;
+    parse(urlOrFileOrData: string | File | ArrayBuffer | Buffer, callback: (stlData: STLData) => void): void;
     /**
      * Returns a copy of the stl data, with coincident vertices merged.
      */

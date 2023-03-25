@@ -125,7 +125,7 @@
                     }
                     // each face have to own THREE valid vertices
                     if (vertexCountPerFace !== 3) {
-                        console.error('stl-parser: Something isn\'t right with the vertices of face number ' + faceCounter);
+                        throw new Error('stl-parser: Something isn\'t right with the vertices of face number ' + faceCounter);
                     }
                     faceCounter++;
                 }
@@ -191,17 +191,25 @@
                 STLParser._parseBinary(binData) :
                 STLParser._parseASCII(STLParser._ensureString(data));
         };
+        STLParser._isURL = function (url) {
+            // isURL may be a little fragile.
+            return url.slice(-3).toLowerCase() === 'stl';
+        };
         /**
          * Parse stl file synchronously (node only).
          */
-        STLParser.prototype.parseSync = function (url) {
-            if (typeof window !== 'undefined') {
-                throw new Error('Cannot call STLParser.parseSync() from a browser.');
+        STLParser.prototype.parseSync = function (urlOrData) {
+            if (typeof urlOrData === 'string' && STLParser._isURL(urlOrData)) {
+                if (typeof window !== 'undefined') {
+                    throw new Error('Cannot call STLParser.parseSync() from a browser.');
+                }
+                // Load the file with fs.
+                var fs = require('fs');
+                var fileBuffer = fs.readFileSync(urlOrData);
+                // Without making a copy of fileBuffer below, multiple calls to readFileSync creates problems.
+                return this._parse(new Uint8Array(fileBuffer).buffer);
             }
-            // Load the file with fs.
-            var fs = require('fs');
-            var fileBuffer = fs.readFileSync(url);
-            return this._parse(Buffer.from(fileBuffer).buffer);
+            return this._parse(urlOrData.buffer ? new Uint8Array(urlOrData).buffer : urlOrData);
         };
         /**
          * Parse stl file asynchronously (returns Promise).
@@ -218,37 +226,49 @@
          * Parse the .stl file at the specified file path of File object.
          * Made this compatible with Node and the browser, maybe there is a better way?
          */
-        STLParser.prototype.parse = function (urlOrFile, callback) {
+        STLParser.prototype.parse = function (urlOrFileOrData, callback) {
             var self = this;
-            if (typeof urlOrFile === 'string') {
-                if (typeof window !== 'undefined') {
-                    // Load the file with XMLHttpRequest.
-                    var request_1 = new XMLHttpRequest();
-                    request_1.open('GET', urlOrFile, true);
-                    request_1.responseType = 'arraybuffer';
-                    request_1.onload = function () {
-                        var stlData = self._parse(request_1.response);
+            if (typeof urlOrFileOrData === 'string') {
+                // Could be url or ASCII string containing STL data.
+                if (STLParser._isURL(urlOrFileOrData)) {
+                    if (typeof window !== 'undefined') {
+                        // Load the file with XMLHttpRequest.
+                        var request_1 = new XMLHttpRequest();
+                        request_1.open('GET', urlOrFileOrData, true);
+                        request_1.responseType = 'arraybuffer';
+                        request_1.onload = function () {
+                            var stlData = self._parse(request_1.response);
+                            // Call the callback function with the parsed mesh data.
+                            callback(stlData);
+                        };
+                        request_1.send();
+                    }
+                    else {
                         // Call the callback function with the parsed mesh data.
-                        callback(stlData);
-                    };
-                    request_1.send();
+                        callback(this.parseSync(urlOrFileOrData));
+                    }
                 }
                 else {
-                    // Call the callback function with the parsed mesh data.
-                    callback(this.parseSync(urlOrFile));
+                    var stlData = this._parse(urlOrFileOrData);
+                    callback(stlData);
                 }
             }
-            else {
+            else if (urlOrFileOrData instanceof Object && urlOrFileOrData.hasOwnProperty('fd') && urlOrFileOrData.hasOwnProperty('path')) {
                 // We only ever hit this in the browser.
                 // Load the file with FileReader.
                 if (!STLParser.reader)
                     STLParser.reader = new FileReader();
                 STLParser.reader.onload = function () {
-                    var data = self._parse(STLParser.reader.result);
+                    var stlData = self._parse(STLParser.reader.result);
                     // Call the callback function with the parsed mesh data.
-                    callback(data);
+                    callback(stlData);
                 };
-                STLParser.reader.readAsArrayBuffer(urlOrFile);
+                STLParser.reader.readAsArrayBuffer(urlOrFileOrData);
+            }
+            else {
+                // Buffer/ArrayBuffer.
+                var stlData = this._parse(urlOrFileOrData.buffer ? new Uint8Array(urlOrFileOrData).buffer : urlOrFileOrData);
+                callback(stlData);
             }
         };
         /**

@@ -131,7 +131,7 @@ export class STLParser {
 				}
 				// each face have to own THREE valid vertices
 				if ( vertexCountPerFace !== 3 ) {
-					console.error('stl-parser: Something isn\'t right with the vertices of face number ' + faceCounter);
+					throw new Error('stl-parser: Something isn\'t right with the vertices of face number ' + faceCounter);
 				}
 
 				faceCounter++;
@@ -194,7 +194,7 @@ export class STLParser {
 
 	private static _ensureString(buffer: ArrayBuffer | string) {
 		if (typeof buffer !== 'string') {
-			return new TextDecoder().decode( buffer );
+			return new TextDecoder().decode(buffer);
 		}
 		return buffer;
 	}
@@ -206,23 +206,32 @@ export class STLParser {
 			STLParser._parseASCII(STLParser._ensureString(data));
 	}
 
+	private static _isURL(url: string) {
+		// isURL may be a little fragile.
+		return url.slice(-3).toLowerCase() === 'stl';
+	}
+
 	/**
 	 * Parse stl file synchronously (node only).
 	 */
-	parseSync(url: string) {
-		if (typeof window !== 'undefined') {
-			throw new Error('Cannot call STLParser.parseSync() from a browser.');
+	parseSync(urlOrData: string | ArrayBuffer | Buffer) {
+		if (typeof urlOrData === 'string' && STLParser._isURL(urlOrData)) {
+			if (typeof window !== 'undefined') {
+				throw new Error('Cannot call STLParser.parseSync() from a browser.');
+			}
+			// Load the file with fs.
+			const fs = require('fs');
+			const fileBuffer = fs.readFileSync(urlOrData);
+			// Without making a copy of fileBuffer below, multiple calls to readFileSync creates problems.
+			return this._parse(new Uint8Array(fileBuffer).buffer);
 		}
-		// Load the file with fs.
-		const fs = require('fs');
-		const fileBuffer = fs.readFileSync(url);
-		return this._parse(Buffer.from(fileBuffer).buffer);
+		return this._parse((urlOrData as Buffer).buffer ? new Uint8Array(urlOrData as Buffer).buffer : urlOrData);
 	}
 
 	/**
 	 * Parse stl file asynchronously (returns Promise).
 	 */
-	parseAsync(urlOrFile: string | File) {
+	parseAsync(urlOrFile: string | File | ArrayBuffer | Buffer) {
 		const self = this;
 		return new Promise<STLData>((resolve) => {
 			self.parse(urlOrFile, (mesh) => {
@@ -235,34 +244,44 @@ export class STLParser {
 	 * Parse the .stl file at the specified file path of File object.
 	 * Made this compatible with Node and the browser, maybe there is a better way?
 	 */
-	parse(urlOrFile: string | File, callback: (stlData: STLData) => void) {
+	parse(urlOrFileOrData: string | File | ArrayBuffer | Buffer, callback: (stlData: STLData) => void) {
 		const self = this;
-		if (typeof urlOrFile === 'string') {
-			if (typeof window !== 'undefined') {
-				// Load the file with XMLHttpRequest.
-				const request = new XMLHttpRequest();
-				request.open('GET', urlOrFile, true);
-				request.responseType = 'arraybuffer';
-				request.onload = () => {
-					const stlData = self._parse(request.response as ArrayBuffer);
+		if (typeof urlOrFileOrData === 'string') {
+			// Could be url or ASCII string containing STL data.
+			if (STLParser._isURL(urlOrFileOrData)) {
+				if (typeof window !== 'undefined') {
+					// Load the file with XMLHttpRequest.
+					const request = new XMLHttpRequest();
+					request.open('GET', urlOrFileOrData, true);
+					request.responseType = 'arraybuffer';
+					request.onload = () => {
+						const stlData = self._parse(request.response as ArrayBuffer);
+						// Call the callback function with the parsed mesh data.
+						callback(stlData);
+					};
+					request.send();
+				} else {
 					// Call the callback function with the parsed mesh data.
-					callback(stlData);
-				};
-				request.send();
+					callback(this.parseSync(urlOrFileOrData));
+				}
 			} else {
-				// Call the callback function with the parsed mesh data.
-				callback(this.parseSync(urlOrFile));
+				const stlData = this._parse(urlOrFileOrData);
+				callback(stlData);
 			}
-		} else {
+		} else if (urlOrFileOrData instanceof Object && urlOrFileOrData.hasOwnProperty('fd') && urlOrFileOrData.hasOwnProperty('path')) {
 			// We only ever hit this in the browser.
 			// Load the file with FileReader.
 			if (!STLParser.reader) STLParser.reader = new FileReader();
 			STLParser.reader.onload = () => {
-				const data = self._parse(STLParser.reader!.result as ArrayBuffer);
+				const stlData = self._parse(STLParser.reader!.result as ArrayBuffer);
 				// Call the callback function with the parsed mesh data.
-				callback(data);
+				callback(stlData);
 			}
-			STLParser.reader.readAsArrayBuffer(urlOrFile);
+			STLParser.reader.readAsArrayBuffer(urlOrFileOrData as File);
+		} else {
+			// Buffer/ArrayBuffer.
+			const stlData = this._parse((urlOrFileOrData as Buffer).buffer ? new Uint8Array(urlOrFileOrData as Buffer).buffer : urlOrFileOrData as ArrayBuffer);
+			callback(stlData);
 		}
 	}
 
