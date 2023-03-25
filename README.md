@@ -13,7 +13,7 @@ Live demo: [apps.amandaghassaei.com/stl-parser/demo/](https://apps.amandaghassae
 
 ## STL File Format
 
-The .stl file format stores geometry (and sometimes color) information for 3D triangulated meshes.  stl-parser does not generate or render .stl files, but it will allow you to parse them in a browser or nodejs environment.  You can view .stl files by dragging them into the [demo app](https://apps.amandaghassaei.com/stl-parser/demo/).  Example .stl files can be found in [test/stl/](https://github.com/amandaghassaei/stl-parser/tree/main/test/stl).
+The .stl file format stores geometry (and sometimes color) information for 3D triangulated meshes.  stl-parser does not generate or render .stl files, but it will allow you to parse them in a browser or nodejs environment.  Example .stl files can be found in [test/stl/](https://github.com/amandaghassaei/stl-parser/tree/main/test/stl).
 
 
 ## Installation
