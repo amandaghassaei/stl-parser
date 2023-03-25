@@ -5,6 +5,8 @@ export type STLData = {
 	faceIndices?: Uint32Array,
 };
 
+// Parsing code is based on:
+// https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js
 export class STLParser {
 	// FileReader instance to load the stl file.
 	static reader?: FileReader;
