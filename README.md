@@ -56,7 +56,9 @@ const { STLParser } = STLParserLib;
 ```js
 // Create a new parser instance,
 const parser = new STLParser();
+
 // Parse the .stl file using the specified file path.
+// You can also pass in a File or Buffer object to parse.
 parser.parse('./teapot.stl', (mesh) => {
   const {
     vertices,
