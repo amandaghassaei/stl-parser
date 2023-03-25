@@ -87,7 +87,7 @@ stl-parser also contains helper functions for analyzing/modifying the mesh data:
 
 ## Limitations
 
-- See limitations listed in [Threejs STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js).  If you have a file that is not being parsed correctly please upload it to [issues](https://github.com/amandaghassaei/stl-parser/issues) to it can be added as a test case.  Pull requests welcome.
+- See limitations listed in [Threejs STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js).  If you have a file that is not being parsed correctly, please upload it to [Issues](https://github.com/amandaghassaei/stl-parser/issues) to it can be added as a test case.  Pull requests welcome.
 
 
 ## Acknowledgements
