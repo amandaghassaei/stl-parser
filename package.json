@@ -1,7 +1,7 @@
 {
   "name": "@amandaghassaei/stl-parser",
   "version": "1.1.1",
-  "description": "3D STL format parser, written in TypeScript",
+  "description": "Standalone module for parsing binary and ASCII STL files, written in TypeScript",
   "main": "dist/stl-parser.js",
   "types": "dist/types/stl-parser.d.ts",
   "keywords": [
