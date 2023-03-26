@@ -215,12 +215,6 @@ export class STLParser {
 		return url.slice(-3).toLowerCase() === 'stl';
 	}
 
-	private static _loadViaNodejs(url: string, callback: (buffer: Buffer) => void ) {
-		import('fs').then((fs) => {
-			callback(fs.readFileSync(url));
-		});
-	}
-
 	/**
 	 * Parse stl file asynchronously (returns Promise).
 	 */
@@ -257,7 +251,8 @@ export class STLParser {
 				} else {
 					// Nodejs.
 					// Call the callback function with the parsed mesh data.
-					this._loadViaNodejs(urlOrFileOrData, (buffer) => {
+					import('fs').then((fs) => {
+						const buffer = fs.readFileSync(urlOrFileOrData);
 						callback(this._parse(new Uint8Array(buffer).buffer));
 					});
 				}
@@ -265,7 +260,7 @@ export class STLParser {
 				const stlData = this._parse(urlOrFileOrData);
 				callback(stlData);
 			}
-		} else if (urlOrFileOrData instanceof Object && urlOrFileOrData.hasOwnProperty('fd') && urlOrFileOrData.hasOwnProperty('path')) {
+		} else if (urlOrFileOrData instanceof Object && typeof (urlOrFileOrData as File).name == 'string') {
 			// We only ever hit this in the browser.
 			// Load the file with FileReader.
 			if (!this.reader) this.reader = new FileReader();

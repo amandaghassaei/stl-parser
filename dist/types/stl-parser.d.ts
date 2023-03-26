@@ -16,7 +16,6 @@ export declare class STLParser {
     private static _ensureString;
     private static _parse;
     private static _isURL;
-    private static _loadViaNodejs;
     /**
      * Parse stl file asynchronously (returns Promise).
      */
