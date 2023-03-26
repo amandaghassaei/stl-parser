@@ -85,7 +85,7 @@ mesh.mergeVertices().scaleVerticesToUnitBoundingBox();
 const { faceIndices } = mesh;
 ```
 
-- `STLMesh.mergeVertices()` merges coincident vertices and adds a `faceIndices` array containing triangle face vertex indices.  `faceIndices` has length 3 * numFaces and is in the form: `[v01, v02, v03, v11, v12, v13, ...]`.
+- `STLMesh.mergeVertices()` merges coincident vertices and adds a `faceIndices` array to the mesh object.  `faceIndices` has length 3 * numFaces and contains a flat list of triangle face vertex indices in the following order: `[v01, v02, v03, v11, v12, v13, ...]`.
 - `STLMesh.scaleVerticesToUnitBoundingBox()` scales the `vertices` values (in place) to fit inside a unit box and centered around the origin.
 
 
