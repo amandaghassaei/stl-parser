@@ -8,7 +8,7 @@ const { cubeString } = require('./stl/cubeString');
 
 describe('stl-parser', () => {
 	describe('parseSTL', () => {
-		it('parses cubeAscii data', () => {
+		it('parses cube ascii data', () => {
 			const {
 				vertices,
 				faceNormals,
@@ -20,7 +20,7 @@ describe('stl-parser', () => {
 			expect(vertices.slice(0, 3)).to.deep.equal([10, 0, -10]);
 			expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
 		});
-		it('parses cubeBinary data', () => {
+		it('parses cube binary data', () => {
 			const {
 				vertices,
 				faceNormals,
