@@ -54,18 +54,19 @@ const { STLParser } = STLParserLib;
 ## Use
 
 ```js
-// Parse the .stl file using the specified file path.
-// You can also pass in a File or Buffer object to parse.
-STLParser.parse('./teapot.stl', (mesh) => {
+// Load and parse the .stl file using url or File object.
+STLParser.load('./teapot.stl', (mesh) => {
   const {
     vertices,
     faceNormals,
     faceColors,
   } = mesh;
 });
-
 // Also try:
-// const mesh = await STLParser.parseAsync('./teapot.stl');
+// const mesh = await STLParser.loadAsync('./teapot.stl');
+
+// Or parse synchronously.
+const mesh = STLParser.parse(fs.readFileSync('./teapot.stl'));
 ```
 
 - `vertices` is an array of length 3 * numVertices containing a flat list of vertex positions in the following order `[x0, y0, z0, x1, y1, z1, ...]`.  Each group of three vertices make up a triangle in the .stl mesh (by default, vertices are not shared between triangles in the .stl format, see `STLParser.mergeVertices(mesh)`).

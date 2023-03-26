@@ -9,7 +9,7 @@ export type STLData = {
 // https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js
 export class STLParser {
 	constructor() {
-		throw new Error(`All STLLoader methods are static, don't init with 'new', use STLParser.parse() or STLParser.parseAsync() instead.`);
+		throw new Error(`All STLLoader methods are static, don't init with 'new', use STLParser.parse(), STLParser.load(), or STLParser.loadAsync() instead.`);
 	}
 
 	private static _parseBinary(data: ArrayBuffer) {
