@@ -182,11 +182,12 @@ function _ensureString(buffer: ArrayBuffer | string) {
 	}
 	return buffer;
 }
-	
-export function parseSTL(data: Buffer | ArrayBuffer | string): STLMesh {
-	if (typeof data !== 'string') {
-		data = (data as Buffer).buffer ? new Uint8Array(data as Buffer).buffer : data;
-	}
+
+/**
+ * Synchronously parse an already loaded .stl file buffer.
+ */
+export function parseSTL(data: Buffer | ArrayBuffer): STLMesh {
+	data = (data as Buffer).buffer ? new Uint8Array(data as Buffer).buffer : data;
 	const binData = _ensureBinary(data);
 	return _isBinary(binData) ?
 		_parseBinary(binData) :
@@ -194,7 +195,7 @@ export function parseSTL(data: Buffer | ArrayBuffer | string): STLMesh {
 }
 
 /**
- * Parse stl file asynchronously (returns Promise).
+ * Parse .stl file asynchronously (returns Promise).
  */
 export function loadSTLAsync(urlOrFile: string | File) {
 	return new Promise<STLMesh>((resolve) => {
@@ -205,11 +206,11 @@ export function loadSTLAsync(urlOrFile: string | File) {
 }
 
 /**
- * Parse the .stl file at the specified file path of File object.
- * Made this compatible with Node and the browser, maybe there is a better way?
+ * Parse the .stl file at the specified file path or File object.
  */
 export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => void) {
 	if (typeof urlOrFile === 'string') {
+		// Made this compatible with Node and the browser, maybe there is a better way?
 		if (typeof window !== 'undefined') {
 			// Browser.
 			// Load the file with XMLHttpRequest.

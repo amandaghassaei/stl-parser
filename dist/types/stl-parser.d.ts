@@ -1,12 +1,14 @@
 /// <reference types="node" />
-export declare function parseSTL(data: Buffer | ArrayBuffer | string): STLMesh;
 /**
- * Parse stl file asynchronously (returns Promise).
+ * Synchronously parse an already loaded .stl file buffer.
+ */
+export declare function parseSTL(data: Buffer | ArrayBuffer): STLMesh;
+/**
+ * Parse .stl file asynchronously (returns Promise).
  */
 export declare function loadSTLAsync(urlOrFile: string | File): Promise<STLMesh>;
 /**
- * Parse the .stl file at the specified file path of File object.
- * Made this compatible with Node and the browser, maybe there is a better way?
+ * Parse the .stl file at the specified file path or File object.
  */
 export declare function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => void): void;
 export type STLMesh = {

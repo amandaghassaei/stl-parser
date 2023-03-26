@@ -149,17 +149,18 @@
         }
         return buffer;
     }
+    /**
+     * Synchronously parse an already loaded .stl file buffer.
+     */
     function parseSTL(data) {
-        if (typeof data !== 'string') {
-            data = data.buffer ? new Uint8Array(data).buffer : data;
-        }
+        data = data.buffer ? new Uint8Array(data).buffer : data;
         var binData = _ensureBinary(data);
         return _isBinary(binData) ?
             _parseBinary(binData) :
             _parseASCII(_ensureString(data));
     }
     /**
-     * Parse stl file asynchronously (returns Promise).
+     * Parse .stl file asynchronously (returns Promise).
      */
     function loadSTLAsync(urlOrFile) {
         return new Promise(function (resolve) {
@@ -169,11 +170,11 @@
         });
     }
     /**
-     * Parse the .stl file at the specified file path of File object.
-     * Made this compatible with Node and the browser, maybe there is a better way?
+     * Parse the .stl file at the specified file path or File object.
      */
     function loadSTL(urlOrFile, callback) {
         if (typeof urlOrFile === 'string') {
+            // Made this compatible with Node and the browser, maybe there is a better way?
             if (typeof window !== 'undefined') {
                 // Browser.
                 // Load the file with XMLHttpRequest.
