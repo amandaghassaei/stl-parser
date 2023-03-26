@@ -116,9 +116,9 @@ describe('STLParser', () => {
 				2, 7, 5, 1, 0, 6, 6, 0, 4
 			]));			
 		});
-		it('calculates edges', async () => {
+		it('calculates edges', () => {
 			{
-				const stlData = await STLParser.loadAsync('./test/stl/cubeAscii.stl');
+				const stlData = STLParser.parse(cubeAscii);
 				let edges = STLParser.calculateEdges(stlData);
 				expect(edges).to.deep.equal(new Uint32Array([
 					0,  1,  1,  2,  2,  0,  3,  4,  4,  5,  5,  3,
@@ -140,7 +140,7 @@ describe('STLParser', () => {
 				expect(edges.length).to.equal(stlDataMerged.faceIndices!.length);
 			}
 			{
-				const stlData = await STLParser.loadAsync('./test/stl/cubeBinary.stl');
+				const stlData = STLParser.parse(cubeBinary);
 				let edges = STLParser.calculateEdges(stlData);
 				expect(edges).to.deep.equal(new Uint32Array([
 					0,  1,  1,  2,  2,  0,  3,  4,  4,  5,  5,  3,
@@ -162,30 +162,30 @@ describe('STLParser', () => {
 				expect(edges.length).to.equal(stlDataMerged.faceIndices!.length);
 			}
 		});
-		it('calculates bounding box', async () => {
+		it('calculates bounding box', () => {
 			{
-				const stlData = await STLParser.loadAsync('./test/stl/cubeAscii.stl');
+				const stlData = STLParser.parse(cubeAscii);
 				const { min, max } = STLParser.calculateBoundingBox(stlData);
 				expect(min).to.deep.equal([0, 0, -10]);
 				expect(max).to.deep.equal([10, 10, 0]);
 			}
 			{
-				const stlData = await STLParser.loadAsync('./test/stl/cubeBinary.stl');
+				const stlData = STLParser.parse(cubeBinary);
 				const { min, max } = STLParser.calculateBoundingBox(stlData);
 				expect(min).to.deep.equal([0, 0, -10]);
 				expect(max).to.deep.equal([10, 10, 0]);
 			}
 		});
-		it('scales the vertex positions to unit bounding box', async () => {
+		it('scales the vertex positions to unit bounding box', () => {
 			{
-				const stlData = await STLParser.loadAsync('./test/stl/cubeAscii.stl');
+				const stlData = STLParser.parse(cubeAscii);
 				stlData.vertices = STLParser.scaleVerticesToUnitBoundingBox(stlData);
 				const { min, max } = STLParser.calculateBoundingBox(stlData);
 				expect(min).to.deep.equal([-0.5, -0.5, -0.5]);
 				expect(max).to.deep.equal([0.5, 0.5, 0.5]);
 			}
 			{
-				const stlData = await STLParser.loadAsync('./test/stl/cubeBinary.stl');
+				const stlData = STLParser.parse(cubeBinary);
 				stlData.vertices = STLParser.scaleVerticesToUnitBoundingBox(stlData);
 				const { min, max } = STLParser.calculateBoundingBox(stlData);
 				expect(min).to.deep.equal([-0.5, -0.5, -0.5]);
