@@ -184,10 +184,12 @@ function _ensureString(buffer: ArrayBuffer | string) {
 }
 
 /**
- * Synchronously parse an already loaded .stl file buffer.
+ * Synchronously parse an already loaded .stl file buffer or string.
  */
-export function parseSTL(data: Buffer | ArrayBuffer): STLMesh {
-	data = (data as Buffer).buffer ? new Uint8Array(data as Buffer).buffer : data;
+export function parseSTL(data: Buffer | ArrayBuffer | string): STLMesh {
+	if (typeof data !== 'string') {
+		data = (data as Buffer).buffer ? new Uint8Array(data as Buffer).buffer : data;
+	}
 	const binData = _ensureBinary(data);
 	return _isBinary(binData) ?
 		_parseBinary(binData) :

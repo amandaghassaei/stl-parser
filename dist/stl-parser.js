@@ -150,10 +150,12 @@
         return buffer;
     }
     /**
-     * Synchronously parse an already loaded .stl file buffer.
+     * Synchronously parse an already loaded .stl file buffer or string.
      */
     function parseSTL(data) {
-        data = data.buffer ? new Uint8Array(data).buffer : data;
+        if (typeof data !== 'string') {
+            data = data.buffer ? new Uint8Array(data).buffer : data;
+        }
         var binData = _ensureBinary(data);
         return _isBinary(binData) ?
             _parseBinary(binData) :

@@ -1,8 +1,8 @@
 /// <reference types="node" />
 /**
- * Synchronously parse an already loaded .stl file buffer.
+ * Synchronously parse an already loaded .stl file buffer or string.
  */
-export declare function parseSTL(data: Buffer | ArrayBuffer): STLMesh;
+export declare function parseSTL(data: Buffer | ArrayBuffer | string): STLMesh;
 /**
  * Parse .stl file asynchronously (returns Promise).
  */
