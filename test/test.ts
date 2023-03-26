@@ -5,7 +5,7 @@ import { parseSTL, loadSTL, loadSTLAsync, STLMesh } from '../';
 const cubeAscii = readFileSync('./test/stl/cubeAscii.stl');
 const cubeBinary = readFileSync('./test/stl/cubeBinary.stl');
 
-describe('STLParser', () => {
+describe('stl-parser', () => {
 	describe('parseSTL', () => {
 		it('parses cubeAscii data', () => {
 			const {
