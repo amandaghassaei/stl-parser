@@ -1,4 +1,3 @@
-
 // Parsing code is based on:
 // https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js
 function _parseBinary(data: ArrayBuffer) {
@@ -65,7 +64,7 @@ function _parseBinary(data: ArrayBuffer) {
 		}
 	}
 
-	return new STLMesh(
+	return new _STLMesh(
 		vertices,
 		faceNormals,
 		faceColors,
@@ -97,7 +96,7 @@ function _parseASCII(data: string) {
 
 			while ((result = patternNormal.exec(text)) !== null) {
 				// every face have to own ONE valid normal
-				if (normalCountPerFace > 0) throw new Error('Problem parsing STL file: something isn\'t right with the normal of face number ' + faceCounter);
+				if (normalCountPerFace > 0) throw new Error('stl-parser: Something isn\'t right with the normal of face number ' + faceCounter);
 				faceNormals.push(
 					parseFloat(result[1]),
 					parseFloat(result[2]),
@@ -116,14 +115,14 @@ function _parseASCII(data: string) {
 			}
 			// each face have to own THREE valid vertices
 			if ( vertexCountPerFace !== 3 ) {
-				throw new Error('Problem parsing STL file: Something isn\'t right with the vertices of face number ' + faceCounter);
+				throw new Error('stl-parser: Something isn\'t right with the vertices of face number ' + faceCounter);
 			}
 
 			faceCounter++;
 		}
 	}
 
-	return new STLMesh(
+	return new _STLMesh(
 		vertices,
 		faceNormals,
 	);
@@ -184,7 +183,7 @@ function _ensureString(buffer: ArrayBuffer | string) {
 	return buffer;
 }
 	
-export function parseSTL(data: Buffer | ArrayBuffer | string) {
+export function parseSTL(data: Buffer | ArrayBuffer | string): STLMesh {
 	if (typeof data !== 'string') {
 		data = (data as Buffer).buffer ? new Uint8Array(data as Buffer).buffer : data;
 	}
@@ -209,7 +208,7 @@ export function loadSTLAsync(urlOrFile: string | File) {
  * Parse the .stl file at the specified file path of File object.
  * Made this compatible with Node and the browser, maybe there is a better way?
  */
-export function loadSTL(urlOrFile: string | File, callback: (stlMesh: STLMesh) => void) {
+export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => void) {
 	if (typeof urlOrFile === 'string') {
 		if (typeof window !== 'undefined') {
 			// Browser.
@@ -218,9 +217,9 @@ export function loadSTL(urlOrFile: string | File, callback: (stlMesh: STLMesh) =
 			request.open('GET', urlOrFile, true);
 			request.responseType = 'arraybuffer';
 			request.onload = () => {
-				const stlMesh = parseSTL(request.response as ArrayBuffer);
+				const mesh = parseSTL(request.response as ArrayBuffer);
 				// Call the callback function with the parsed mesh data.
-				callback(stlMesh);
+				callback(mesh);
 			};
 			request.send();
 		} else {
@@ -236,15 +235,15 @@ export function loadSTL(urlOrFile: string | File, callback: (stlMesh: STLMesh) =
 		// Load the file with FileReader.
 		const reader = new FileReader();
 		reader.onload = () => {
-			const stlMesh = parseSTL(reader.result as ArrayBuffer);
+			const mesh = parseSTL(reader.result as ArrayBuffer);
 			// Call the callback function with the parsed mesh data.
-			callback(stlMesh);
+			callback(mesh);
 		}
 		reader.readAsArrayBuffer(urlOrFile as File);
 	}
 }
 
-export class STLMesh {
+class _STLMesh {
 	private _vertices: Float32Array | number[];
 	readonly faceNormals: Float32Array | number[];
 	readonly faceColors?: Float32Array;
@@ -408,4 +407,14 @@ export class STLMesh {
 		return this;
 	}
 }
-	
+
+export type STLMesh = {
+	readonly vertices: Float32Array | number[];
+	readonly faceNormals: Float32Array | number[];
+	readonly edges: Uint32Array | number[];
+	readonly faceColors?: Float32Array;
+	readonly faceIndices: Uint32Array;
+	readonly boundingBox: { min:number[], max: number[] };
+	mergeVertices: () => STLMesh;
+	scaleVerticesToUnitBoundingBox: () => STLMesh;
+}

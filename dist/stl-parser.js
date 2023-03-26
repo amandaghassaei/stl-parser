@@ -61,7 +61,7 @@
                 vertices[componentIndex + 2] = reader.getFloat32(vertexStart + 8, true);
             }
         }
-        return new STLMesh(vertices, faceNormals, faceColors);
+        return new _STLMesh(vertices, faceNormals, faceColors);
     }
     function _parseASCII(data) {
         var patternSolid = /solid([\s\S]*?)endsolid/g;
@@ -82,7 +82,7 @@
                 while ((result = patternNormal.exec(text)) !== null) {
                     // every face have to own ONE valid normal
                     if (normalCountPerFace > 0)
-                        throw new Error('Problem parsing STL file: something isn\'t right with the normal of face number ' + faceCounter);
+                        throw new Error('stl-parser: Something isn\'t right with the normal of face number ' + faceCounter);
                     faceNormals.push(parseFloat(result[1]), parseFloat(result[2]), parseFloat(result[3]));
                     normalCountPerFace++;
                 }
@@ -92,12 +92,12 @@
                 }
                 // each face have to own THREE valid vertices
                 if (vertexCountPerFace !== 3) {
-                    throw new Error('Problem parsing STL file: Something isn\'t right with the vertices of face number ' + faceCounter);
+                    throw new Error('stl-parser: Something isn\'t right with the vertices of face number ' + faceCounter);
                 }
                 faceCounter++;
             }
         }
-        return new STLMesh(vertices, faceNormals);
+        return new _STLMesh(vertices, faceNormals);
     }
     function _matchDataViewAt(query, reader, offset) {
         // Check if each byte in query matches the corresponding byte from the current offset.
@@ -181,9 +181,9 @@
                 request_1.open('GET', urlOrFile, true);
                 request_1.responseType = 'arraybuffer';
                 request_1.onload = function () {
-                    var stlMesh = parseSTL(request_1.response);
+                    var mesh = parseSTL(request_1.response);
                     // Call the callback function with the parsed mesh data.
-                    callback(stlMesh);
+                    callback(mesh);
                 };
                 request_1.send();
             }
@@ -201,20 +201,20 @@
             // Load the file with FileReader.
             var reader_1 = new FileReader();
             reader_1.onload = function () {
-                var stlMesh = parseSTL(reader_1.result);
+                var mesh = parseSTL(reader_1.result);
                 // Call the callback function with the parsed mesh data.
-                callback(stlMesh);
+                callback(mesh);
             };
             reader_1.readAsArrayBuffer(urlOrFile);
         }
     }
-    var STLMesh = /** @class */ (function () {
-        function STLMesh(vertices, faceNormals, faceColors) {
+    var _STLMesh = /** @class */ (function () {
+        function _STLMesh(vertices, faceNormals, faceColors) {
             this._vertices = vertices;
             this.faceNormals = faceNormals;
             this.faceColors = faceColors;
         }
-        Object.defineProperty(STLMesh.prototype, "vertices", {
+        Object.defineProperty(_STLMesh.prototype, "vertices", {
             get: function () {
                 return this._vertices;
             },
@@ -224,7 +224,7 @@
             enumerable: false,
             configurable: true
         });
-        Object.defineProperty(STLMesh.prototype, "faceIndices", {
+        Object.defineProperty(_STLMesh.prototype, "faceIndices", {
             get: function () {
                 if (!this._faceIndices)
                     throw new Error("stl-parser: Call mergeVertices() before trying to access faceIndices.");
@@ -239,7 +239,7 @@
         /**
          * Merge coincident vertices and index faces.
          */
-        STLMesh.prototype.mergeVertices = function () {
+        _STLMesh.prototype.mergeVertices = function () {
             var vertices = this.vertices;
             var numFaces = vertices.length / 9;
             var verticesMerged = [];
@@ -272,7 +272,7 @@
             delete this._edges; // Invalidate previously calculated edges.
             return this;
         };
-        Object.defineProperty(STLMesh.prototype, "edges", {
+        Object.defineProperty(_STLMesh.prototype, "edges", {
             /**
              * Returns the edges in the stl data (without duplicates).
              */
@@ -323,7 +323,7 @@
             enumerable: false,
             configurable: true
         });
-        Object.defineProperty(STLMesh.prototype, "boundingBox", {
+        Object.defineProperty(_STLMesh.prototype, "boundingBox", {
             /**
              * Returns the bounding box of the mesh.
              */
@@ -358,7 +358,7 @@
         /**
          * Scales vertex positions (in place) to unit bounding box and centers around origin.
          */
-        STLMesh.prototype.scaleVerticesToUnitBoundingBox = function () {
+        _STLMesh.prototype.scaleVerticesToUnitBoundingBox = function () {
             var _a = this, vertices = _a.vertices, boundingBox = _a.boundingBox;
             var min = boundingBox.min, max = boundingBox.max;
             var diff = [max[0] - min[0], max[1] - min[1], max[2] - min[2]];
@@ -374,10 +374,9 @@
             delete this._boundingBox; // Invalidate previously calculated bounding box.
             return this;
         };
-        return STLMesh;
+        return _STLMesh;
     }());
 
-    exports.STLMesh = STLMesh;
     exports.loadSTL = loadSTL;
     exports.loadSTLAsync = loadSTLAsync;
     exports.parseSTL = parseSTL;
