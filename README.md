@@ -27,7 +27,7 @@ npm install @amandaghassaei/stl-parser
 and import into your project:
 
 ```js
-import { STLParser } from '@amandaghassaei/stl-parser';
+import { parseSTL, loadSTL, loadSTLAsync } from '@amandaghassaei/stl-parser';
 ```
 
 ### Import into HTML
@@ -47,7 +47,7 @@ Import [stl-parser.js](https://github.com/amandaghassaei/stl-parser/blob/main/di
 `STLParserLib` will be accessible globally:
 
 ```js
-const { STLParser } = STLParserLib;
+const { parseSTL, loadSTL, loadSTLAsync } = STLParserLib;
 ```
 
 
@@ -55,32 +55,38 @@ const { STLParser } = STLParserLib;
 
 ```js
 // Load and parse the .stl file using url or File object.
-STLParser.load('./teapot.stl', (mesh) => {
+loadSTL('./teapot.stl', (mesh) => {
   const {
     vertices,
     faceNormals,
     faceColors,
+    edges,
+    boundingBox,
   } = mesh;
 });
 // Also try:
-// const mesh = await STLParser.loadAsync('./teapot.stl');
+// const mesh = await loadSTLAsync('./teapot.stl');
 
 // Or parse synchronously.
-const mesh = STLParser.parse(fs.readFileSync('./teapot.stl'));
+const mesh = parseSTL(fs.readFileSync('./teapot.stl'));
 ```
 
 - `vertices` is an array of length 3 * numVertices containing a flat list of vertex positions in the following order `[x0, y0, z0, x1, y1, z1, ...]`.  Each group of three vertices make up a triangle in the .stl mesh (by default, vertices are not shared between triangles in the .stl format, see `STLParser.mergeVertices(mesh)`).
 - `faceNormals` is an array of length 3 * numFaces containing a flat list of face normals in the following order `[nx0, ny0, nz0, nx1, ny1, nz1, ...]`
 - If available, `faceColors` is an array of length 3 * numFaces containing a flat list of face colors in the following order `[r0, g0, b0, r1, g1, b1, ...]`.  Most .stl files do not contain color information and will not return a `faceColors` array.
+- `edges` returns an array containing all unique edges (expressed as pairs of vertex indices) in the mesh.  The edges array is in the form: `[e01, e02, e11, e12, ...]`.  Edges are only calculated when queried and then cached.
+- `boundingBox` returns the min and max of the mesh's bounding box.  min and max are in the form: `[x, y, z]`.
+
+the resulting mesh data also exposes some helper functions for analyzing/modifying the geometry:
 
 
-stl-parser also contains helper functions for analyzing/modifying the mesh data:
+```js
+mesh.mergeVertices().scaleVerticesToUnitBoundingBox();
+const { faceIndices } = mesh;
+```
 
-
-- `STLParser.mergeVertices(mesh)` returns a copy of the .stl mesh data with the coincident vertices merged and a `faceIndices` array containing triangle face vertex indices.  `faceIndices` has length 3 * numFaces is in the form: `[v01, v02, v03, v11, v12, v13, ...]`.
-- `STLParser.calculateEdges(mesh)` returns an array containing all unique edges (expressed as pairs of vertex indices) in the mesh.  The edges array is in the form: `[e01, e02, e11, e12, ...]`.
-- `STLParser.calculateBoundingBox(mesh)` returns the min and max of the mesh's bounding box.  min and max are in the form: `[x, y, z]`.
-- `STLParser.scaleVerticesToUnitBoundingBox(mesh)` returns the a copy of `vertices`, with the values scaled to fit inside a unit box and centered around the origin.
+- `STLMesh.mergeVertices()` merges coincident vertices and adds a `faceIndices` array containing triangle face vertex indices.  `faceIndices` has length 3 * numFaces is in the form: `[v01, v02, v03, v11, v12, v13, ...]`.
+- `STLMesh.scaleVerticesToUnitBoundingBox()` scales the `vertices` values (in place) to fit inside a unit box and centered around the origin.
 
 
 ## Limitations

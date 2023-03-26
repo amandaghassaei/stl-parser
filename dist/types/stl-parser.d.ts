@@ -1,45 +1,48 @@
 /// <reference types="node" />
-export type STLData = {
-    vertices: Float32Array | number[];
-    faceNormals: Float32Array | number[];
-    faceColors?: Float32Array;
-    faceIndices?: Uint32Array;
-};
-export declare class STLParser {
-    constructor();
-    private static _parseBinary;
-    private static _parseASCII;
-    private static _matchDataViewAt;
-    private static _isBinary;
-    private static _ensureBinary;
-    private static _ensureString;
-    static parse(data: Buffer | ArrayBuffer | string): STLData;
+export declare function parseSTL(data: Buffer | ArrayBuffer | string): STLMesh;
+/**
+ * Parse stl file asynchronously (returns Promise).
+ */
+export declare function loadSTLAsync(urlOrFile: string | File): Promise<STLMesh>;
+/**
+ * Parse the .stl file at the specified file path of File object.
+ * Made this compatible with Node and the browser, maybe there is a better way?
+ */
+export declare function loadSTL(urlOrFile: string | File, callback: (stlMesh: STLMesh) => void): void;
+export declare class STLMesh {
+    private _vertices;
+    readonly faceNormals: Float32Array | number[];
+    readonly faceColors?: Float32Array;
+    private _faceIndices?;
+    private _edges?;
+    private _boundingBox?;
+    constructor(vertices: Float32Array | number[], faceNormals: Float32Array | number[], faceColors?: Float32Array);
+    get vertices(): Float32Array | number[];
+    set vertices(vertices: Float32Array | number[]);
+    get faceIndices(): Uint32Array;
+    set faceIndices(faceIndices: Uint32Array);
     /**
-     * Parse stl file asynchronously (returns Promise).
+     * Merge coincident vertices and index faces.
      */
-    static loadAsync(urlOrFile: string | File): Promise<STLData>;
-    /**
-     * Parse the .stl file at the specified file path of File object.
-     * Made this compatible with Node and the browser, maybe there is a better way?
-     */
-    static load(urlOrFile: string | File, callback: (stlData: STLData) => void): void;
-    /**
-     * Returns a copy of the stl data, with coincident vertices merged.
-     */
-    static mergeVertices(stlData: STLData): STLData;
+    mergeVertices(): this;
     /**
      * Returns the edges in the stl data (without duplicates).
      */
-    static calculateEdges(stlData: STLData): number[] | Uint32Array;
+    get edges(): Uint32Array | number[];
+    set edges(edges: Uint32Array | number[]);
     /**
-     * Returns the bounding box of the stl data.
+     * Returns the bounding box of the mesh.
      */
-    static calculateBoundingBox(stlData: STLData): {
+    get boundingBox(): {
         min: number[];
         max: number[];
     };
+    set boundingBox(boundingBox: {
+        min: number[];
+        max: number[];
+    });
     /**
-     * Scales vertex positions to unit bounding box and centers around origin.
+     * Scales vertex positions (in place) to unit bounding box and centers around origin.
      */
-    static scaleVerticesToUnitBoundingBox(stlData: STLData): Float32Array | number[];
+    scaleVerticesToUnitBoundingBox(): this;
 }

@@ -1,4 +1,4 @@
-const { STLParser } = STLParserLib;
+const { loadSTL } = STLParserLib;
 
 const TEAPOT_URL = '../test/stl/teapot.stl';
 const CHAIR_URL = '../test/stl/chair.stl';
@@ -16,10 +16,11 @@ const PARAMS = {
 	url: TEAPOT_URL,
 };
 
-let mesh, wireframe, rawSTLData;
+let mesh, wireframe, fileOrURL;
 
 // Parse the .stl file using the specified file path.
-STLParser.parse(PARAMS.url, initThreeJSGeometry);
+fileOrURL = PARAMS.url;
+loadSTL(PARAMS.url, initThreeJSGeometry);
 
 // UI
 const pane = new Tweakpane.Pane({
@@ -59,7 +60,8 @@ pane.addInput(PARAMS, 'url', {
 	},
 }).on('change', () => {
 	pane.title = PARAMS.url.split('/').pop();
-	STLParser.parse(PARAMS.url, initThreeJSGeometry);
+	fileOrURL = PARAMS.url;
+	loadSTL(PARAMS.url, initThreeJSGeometry);
 });
 pane.addButton({
 	title: 'Upload .stl (or Drop/Paste)',
@@ -69,7 +71,7 @@ pane.addButton({
 pane.addInput(PARAMS, 'mergeVertices', {
 	label: 'Merge Vertices',
 }).on('change', () => {
-	if (rawSTLData) initThreeJSGeometry(rawSTLData);
+	if (fileOrURL) loadSTL(fileOrURL, initThreeJSGeometry);
 });
 pane.addButton({
 	title: 'View Code on GitHub',
@@ -101,13 +103,13 @@ function removeThreeObject(object) {
 	object.geometry.dispose();
 }
 
-function initMesh(positionsAttribute, faceIndices) {
+function initMesh(positionsAttribute, stlMesh) {
 	// Remove previous mesh.
 	if (mesh) removeThreeObject(mesh);
 
 	// Create a buffer geometry from the position and index arrays.
 	const geometry = new THREE.BufferGeometry();
-	if (faceIndices) geometry.setIndex(new THREE.BufferAttribute(faceIndices, 1));
+	if (PARAMS.mergeVertices) geometry.setIndex(new THREE.BufferAttribute(stlMesh.faceIndices, 1));
 	geometry.setAttribute('position', positionsAttribute);
 	geometry.computeVertexNormals();
 
@@ -140,24 +142,22 @@ function initWireframe(positionsAttribute, edges) {
 	return lines;
 }
 
-function initThreeJSGeometry(stlData) {
-	rawSTLData = stlData;
-	if (PARAMS.mergeVertices) stlData = STLParser.mergeVertices(stlData);
+function initThreeJSGeometry(stlMesh) {
+	if (PARAMS.mergeVertices) stlMesh.mergeVertices();
 	const {
 		vertices,
-		faceIndices,
-	} = stlData;
-	const edges = STLParser.calculateEdges(stlData);
+		edges,
+	} = stlMesh;
 
 	setInfo(`${(vertices.length / 3).toLocaleString()} vertices<br/>
-		${(faceIndices ? faceIndices.length / 3 : vertices.length / 9).toLocaleString()} faces<br/>
+		${(PARAMS.mergeVertices ? stlMesh.faceIndices.length / 3 : vertices.length / 9).toLocaleString()} faces<br/>
 		${(edges.length / 2).toLocaleString()} edges`);
 
 	// Share positions attribute between meshes.
 	const positions = new Float32Array(vertices);
 	const positionsAttribute = new THREE.BufferAttribute(positions, 3);
 
-	mesh = initMesh(positionsAttribute, faceIndices);
+	mesh = initMesh(positionsAttribute, stlMesh);
 	wireframe = initWireframe(positionsAttribute, edges);
 
 	// Center and scale the positions attribute.
@@ -260,7 +260,8 @@ function loadFile(file) {
 	const extension = getExtension(file.name);
 	if (extension !== 'stl') return;
 	pane.title = file.name;
-	STLParser.parse(file, initThreeJSGeometry);
+	fileOrURL = file;
+	loadSTL(file, initThreeJSGeometry);
 	return true;
 }
 
