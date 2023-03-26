@@ -68,7 +68,7 @@ loadSTL('./teapot.stl', (mesh) => {
 // const mesh = await loadSTLAsync('./teapot.stl');
 
 // Or parse file buffer or string synchronously.
-const meshFromFile = parseSTL(fs.readFileSync('./teapot.stl'));
+const meshFromBuffer = parseSTL(fs.readFileSync('./teapot.stl'));
 const meshFromString = parseSTL(`solid ASCII
   facet normal 0.000000e+00 0.000000e+00 -1.000000e+00
     outer loop
