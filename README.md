@@ -6,14 +6,14 @@
 [![NPM Downloads](https://img.shields.io/npm/dw/@amandaghassaei/stl-parser)](https://www.npmtrends.com/@amandaghassaei/stl-parser)
 [![License](https://img.shields.io/npm/l/@amandaghassaei/stl-parser)](https://github.com/amandaghassaei/stl-parser/blob/main/LICENSE.txt)
 
-Standalone module for parsing binary and ASCII STL files – unit tested and written in TypeScript.  Parsing code based on [Threejs STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js).
+Standalone module for loading and parsing binary/ASCII STL files – unit tested and written in TypeScript.  Parsing code based on [Threejs STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js).
 
 Live demo: [apps.amandaghassaei.com/stl-parser/demo/](https://apps.amandaghassaei.com/stl-parser/demo/)
 
 
 ## STL File Format
 
-The .stl file format stores geometry (and sometimes color) information for 3D triangulated meshes.  stl-parser does not generate or render .stl files, but it will allow you to parse them in a browser or nodejs environment.  Example .stl files can be found in [test/stl/](https://github.com/amandaghassaei/stl-parser/tree/main/test/stl).
+The .stl file format stores geometry (and sometimes color) information for 3D triangulated meshes.  stl-parser does not generate or render .stl files, but it will allow you to parse them in a browser or Nodejs environment.  Example .stl files can be found in [test/stl/](https://github.com/amandaghassaei/stl-parser/tree/main/test/stl).
 
 
 ## Installation
@@ -88,14 +88,14 @@ const meshFromString = parseSTL(`solid ASCII
 endsolid`);
 ```
 
-- `vertices` is an array of length 3 * numVertices containing a flat list of vertex positions in the following order `[x0, y0, z0, x1, y1, z1, ...]`.  Each group of three vertices make up a triangle in the .stl mesh (by default, vertices are not shared between triangles in the .stl format, see `mergeVertices()` below).
+- `vertices` is an array of length 3 * numVertices containing a flat list of vertex positions in the following order `[x0, y0, z0, x1, y1, z1, ...]`.  Each group of three vertices make up a triangle in the .stl mesh – by default, vertices are not shared between triangles in the .stl format, see `mergeVertices()` below.
 - `faceNormals` is an array of length 3 * numFaces containing a flat list of face normals in the following order `[nx0, ny0, nz0, nx1, ny1, nz1, ...]`
 - If available, `faceColors` is an array of length 3 * numFaces containing a flat list of face colors in the following order `[r0, g0, b0, r1, g1, b1, ...]`.
 - `edges` is an array containing all unique edges (expressed as pairs of vertex indices) in the mesh in the following order: `[e01, e02, e11, e12, ...]`.  `edges` is calculated when queried and then cached.
-- `boundingBox` returns the min and max of the mesh's bounding box, and is in the form: `{ min: [x, y, z], max: [x, y, z] }`.  `boundingBox` is calculated when queried and then cached.
+- `boundingBox` returns the min and max of the mesh's bounding box in the form: `{ min: [x, y, z], max: [x, y, z] }`.  `boundingBox` is calculated when queried and then cached.
 
 
-The resulting mesh object returned by `parseSTL`, `loadSTL`, and `loadSTLAsync` also exposes methods for modifying its geometry:
+The mesh object returned by `parseSTL`, `loadSTL`, and `loadSTLAsync` also exposes methods for modifying its geometry:
 
 ```js
 mesh.mergeVertices().scaleVerticesToUnitBoundingBox();
@@ -123,7 +123,7 @@ This work is licensed under an [MIT License](https://github.com/amandaghassaei/s
 
 ## Related Libraries
 
-- [msh-parser](https://github.com/amandaghassaei/msh-parser) - finite element .msh format parser.
+- [msh-parser](https://github.com/amandaghassaei/msh-parser) - finite element .msh format parser
 
 
 ## Development
