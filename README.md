@@ -108,12 +108,12 @@ const { faceIndices } = mesh;
 
 ## Limitations
 
-- See limitations listed in [Threejs STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js).  If you have a file that is not being parsed correctly, please upload it to [Issues](https://github.com/amandaghassaei/stl-parser/issues) to it can be added as a test case.  Pull requests welcome.
+- See limitations listed in [Threejs STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js).  If you have a file that is not being parsed correctly, please upload it in an [Issue](https://github.com/amandaghassaei/stl-parser/issues) so it can be added as a test case.  Pull requests welcome.
 
 
 ## Acknowledgements
 
-- This is a TypeScript port of the [STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js) class from [Threejs](https://github.com/mrdoob/three.js).
+- Most of the parsing code in this library is a TypeScript port of the [STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js) class from [Threejs](https://github.com/mrdoob/three.js).
 
 
 ## License
