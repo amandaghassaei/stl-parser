@@ -1,4 +1,4 @@
-# stl-parser
+# @amandaghassaei/stl-parser
 [![stl-parser main image](./main-image.jpg)](https://apps.amandaghassaei.com/stl-parser/demo/)
 
 [![NPM Package](https://img.shields.io/npm/v/@amandaghassaei/stl-parser)](https://www.npmjs.com/package/@amandaghassaei/stl-parser)
