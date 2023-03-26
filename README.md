@@ -68,7 +68,24 @@ loadSTL('./teapot.stl', (mesh) => {
 // const mesh = await loadSTLAsync('./teapot.stl');
 
 // Or parse file buffer or string synchronously.
-const mesh = parseSTL(fs.readFileSync('./teapot.stl'));
+const meshFromFile = parseSTL(fs.readFileSync('./teapot.stl'));
+const meshFromString = parseSTL(`solid ASCII
+  facet normal 0.000000e+00 0.000000e+00 -1.000000e+00
+    outer loop
+      vertex   1.000000e+01 0.000000e+00 -1.000000e+01
+      vertex   0.000000e+00 0.000000e+00 -1.000000e+01
+      vertex   1.000000e+01 1.000000e+01 -1.000000e+01
+    endloop
+  endfacet
+  ....
+  facet normal 0.000000e+00 -1.000000e+00 0.000000e+00
+    outer loop
+      vertex   0.000000e+00 0.000000e+00 0.000000e+00
+      vertex   1.000000e+01 0.000000e+00 -1.000000e+01
+      vertex   1.000000e+01 0.000000e+00 0.000000e+00
+    endloop
+  endfacet
+endsolid`);
 ```
 
 - `vertices` is an array of length 3 * numVertices containing a flat list of vertex positions in the following order `[x0, y0, z0, x1, y1, z1, ...]`.  Each group of three vertices make up a triangle in the .stl mesh (by default, vertices are not shared between triangles in the .stl format, see `mergeVertices()` below).
