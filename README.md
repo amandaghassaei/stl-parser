@@ -121,6 +121,11 @@ const { faceIndices } = mesh;
 This work is licensed under an [MIT License](https://github.com/amandaghassaei/stl-parser/blob/main/LICENSE.txt).
 
 
+## Related Libraries
+
+- [msh-parser](https://github.com/amandaghassaei/msh-parser) - finite element .msh format parser.
+
+
 ## Development
 
 I don't have any plans to continue developing this package, but I'm happy to review pull requests if you would like to add a new feature / fix a bug.
