@@ -6,7 +6,6 @@ export type STLData = {
     faceIndices?: Uint32Array;
 };
 export declare class STLParser {
-    static reader?: FileReader;
     constructor();
     private static _parseBinary;
     private static _parseASCII;
@@ -14,17 +13,16 @@ export declare class STLParser {
     private static _isBinary;
     private static _ensureBinary;
     private static _ensureString;
-    private static _parse;
-    private static _isURL;
+    static parse(data: Buffer | ArrayBuffer | string): STLData;
     /**
      * Parse stl file asynchronously (returns Promise).
      */
-    static parseAsync(urlOrFile: string | File | ArrayBuffer | Buffer): Promise<STLData>;
+    static loadAsync(urlOrFile: string | File): Promise<STLData>;
     /**
      * Parse the .stl file at the specified file path of File object.
      * Made this compatible with Node and the browser, maybe there is a better way?
      */
-    static parse(urlOrFileOrData: string | File | ArrayBuffer | Buffer, callback: (stlData: STLData) => void): void;
+    static load(urlOrFile: string | File, callback: (stlData: STLData) => void): void;
     /**
      * Returns a copy of the stl data, with coincident vertices merged.
      */

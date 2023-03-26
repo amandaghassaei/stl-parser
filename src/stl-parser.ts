@@ -8,9 +8,6 @@ export type STLData = {
 // Parsing code is based on:
 // https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js
 export class STLParser {
-	// FileReader instance to load the stl file.
-	static reader?: FileReader;
-
 	constructor() {
 		throw new Error(`All STLLoader methods are static, don't init with 'new', use STLParser.parse() or STLParser.parseAsync() instead.`);
 	}
@@ -177,7 +174,7 @@ export class STLParser {
 		const solid = [115, 111, 108, 105, 100];
 		for (let offset = 0; offset < 5; offset++) {
 			// If "solid" text is matched to the current offset, declare it to be an ASCII STL.
-			if (this._matchDataViewAt(solid, reader, offset)) return false;
+			if (STLParser._matchDataViewAt(solid, reader, offset)) return false;
 
 		}
 		// Couldn't find "solid" text at the beginning; it is binary STL.
@@ -203,25 +200,23 @@ export class STLParser {
 		return buffer;
 	}
 	
-	private static _parse(data: ArrayBuffer | string): STLData {
-		const binData = this._ensureBinary(data);
-		return this._isBinary(binData) ?
-			this._parseBinary(binData) :
-			this._parseASCII(this._ensureString(data));
-	}
-
-	private static _isURL(url: string) {
-		// isURL may be a little fragile.
-		return url.slice(-3).toLowerCase() === 'stl';
+	static parse(data: Buffer | ArrayBuffer | string): STLData {
+		if (typeof data !== 'string') {
+			data = (data as Buffer).buffer ? new Uint8Array(data as Buffer).buffer : data;
+		}
+		const binData = STLParser._ensureBinary(data);
+		return STLParser._isBinary(binData) ?
+			STLParser._parseBinary(binData) :
+			STLParser._parseASCII(STLParser._ensureString(data));
 	}
 
 	/**
 	 * Parse stl file asynchronously (returns Promise).
 	 */
-	static parseAsync(urlOrFile: string | File | ArrayBuffer | Buffer) {
+	static loadAsync(urlOrFile: string | File) {
 		const self = this;
 		return new Promise<STLData>((resolve) => {
-			self.parse(urlOrFile, (mesh) => {
+			self.load(urlOrFile, (mesh) => {
 				resolve(mesh);
 			});
 		});
@@ -231,49 +226,38 @@ export class STLParser {
 	 * Parse the .stl file at the specified file path of File object.
 	 * Made this compatible with Node and the browser, maybe there is a better way?
 	 */
-	static parse(urlOrFileOrData: string | File | ArrayBuffer | Buffer, callback: (stlData: STLData) => void) {
-		const self = this;
-		if (typeof urlOrFileOrData === 'string') {
-			// Could be url or ASCII string containing STL data.
-			if (this._isURL(urlOrFileOrData)) {
-				if (typeof window !== 'undefined') {
-					// Browser.
-					// Load the file with XMLHttpRequest.
-					const request = new XMLHttpRequest();
-					request.open('GET', urlOrFileOrData, true);
-					request.responseType = 'arraybuffer';
-					request.onload = () => {
-						const stlData = self._parse(request.response as ArrayBuffer);
-						// Call the callback function with the parsed mesh data.
-						callback(stlData);
-					};
-					request.send();
-				} else {
-					// Nodejs.
+	static load(urlOrFile: string | File, callback: (stlData: STLData) => void) {
+		if (typeof urlOrFile === 'string') {
+			if (typeof window !== 'undefined') {
+				// Browser.
+				// Load the file with XMLHttpRequest.
+				const request = new XMLHttpRequest();
+				request.open('GET', urlOrFile, true);
+				request.responseType = 'arraybuffer';
+				request.onload = () => {
+					const stlData = STLParser.parse(request.response as ArrayBuffer);
 					// Call the callback function with the parsed mesh data.
-					import('fs').then((fs) => {
-						const buffer = fs.readFileSync(urlOrFileOrData);
-						callback(this._parse(new Uint8Array(buffer).buffer));
-					});
-				}
+					callback(stlData);
+				};
+				request.send();
 			} else {
-				const stlData = this._parse(urlOrFileOrData);
-				callback(stlData);
+				// Nodejs.
+				// Call the callback function with the parsed mesh data.
+				import('fs').then((fs) => {
+					const buffer = fs.readFileSync(urlOrFile);
+					callback(STLParser.parse(new Uint8Array(buffer).buffer));
+				});
 			}
-		} else if (urlOrFileOrData instanceof Object && typeof (urlOrFileOrData as File).name == 'string') {
+		} else {
 			// We only ever hit this in the browser.
 			// Load the file with FileReader.
-			if (!this.reader) this.reader = new FileReader();
-			this.reader.onload = () => {
-				const stlData = self._parse(this.reader!.result as ArrayBuffer);
+			const reader = new FileReader();
+			reader.onload = () => {
+				const stlData = STLParser.parse(reader.result as ArrayBuffer);
 				// Call the callback function with the parsed mesh data.
 				callback(stlData);
 			}
-			this.reader.readAsArrayBuffer(urlOrFileOrData as File);
-		} else {
-			// Buffer/ArrayBuffer.
-			const stlData = this._parse((urlOrFileOrData as Buffer).buffer ? new Uint8Array(urlOrFileOrData as Buffer).buffer : urlOrFileOrData as ArrayBuffer);
-			callback(stlData);
+			reader.readAsArrayBuffer(urlOrFile as File);
 		}
 	}
 
@@ -281,7 +265,7 @@ export class STLParser {
 	 * Returns a copy of the stl data, with coincident vertices merged.
 	 */
 	static mergeVertices(stlData: STLData): STLData {
-		const { vertices, faceNormals } = stlData;
+		const { vertices } = stlData;
 		const numFaces = vertices.length / 9;
 		const verticesMerged: number[] = [];
 		const facesIndexed = new Uint32Array(numFaces * 3);
@@ -378,7 +362,7 @@ export class STLParser {
 	 */
 	static scaleVerticesToUnitBoundingBox(stlData: STLData) {
 		const { vertices } = stlData;
-		const { min, max } = this.calculateBoundingBox(stlData);
+		const { min, max } = STLParser.calculateBoundingBox(stlData);
 		const diff = [max[0] - min[0], max[1] - min[1], max[2] - min[2]];
 		const center = [(max[0] + min[0]) / 2, (max[1] + min[1]) / 2, (max[2] + min[2]) / 2];
 		const scale = Math.max(diff[0], diff[1], diff[2]);

@@ -162,7 +162,7 @@
             var solid = [115, 111, 108, 105, 100];
             for (var offset = 0; offset < 5; offset++) {
                 // If "solid" text is matched to the current offset, declare it to be an ASCII STL.
-                if (this._matchDataViewAt(solid, reader, offset))
+                if (STLParser._matchDataViewAt(solid, reader, offset))
                     return false;
             }
             // Couldn't find "solid" text at the beginning; it is binary STL.
@@ -186,23 +186,22 @@
             }
             return buffer;
         };
-        STLParser._parse = function (data) {
-            var binData = this._ensureBinary(data);
-            return this._isBinary(binData) ?
-                this._parseBinary(binData) :
-                this._parseASCII(this._ensureString(data));
-        };
-        STLParser._isURL = function (url) {
-            // isURL may be a little fragile.
-            return url.slice(-3).toLowerCase() === 'stl';
+        STLParser.parse = function (data) {
+            if (typeof data !== 'string') {
+                data = data.buffer ? new Uint8Array(data).buffer : data;
+            }
+            var binData = STLParser._ensureBinary(data);
+            return STLParser._isBinary(binData) ?
+                STLParser._parseBinary(binData) :
+                STLParser._parseASCII(STLParser._ensureString(data));
         };
         /**
          * Parse stl file asynchronously (returns Promise).
          */
-        STLParser.parseAsync = function (urlOrFile) {
+        STLParser.loadAsync = function (urlOrFile) {
             var self = this;
             return new Promise(function (resolve) {
-                self.parse(urlOrFile, function (mesh) {
+                self.load(urlOrFile, function (mesh) {
                     resolve(mesh);
                 });
             });
@@ -211,62 +210,47 @@
          * Parse the .stl file at the specified file path of File object.
          * Made this compatible with Node and the browser, maybe there is a better way?
          */
-        STLParser.parse = function (urlOrFileOrData, callback) {
-            var _this = this;
-            var self = this;
-            if (typeof urlOrFileOrData === 'string') {
-                // Could be url or ASCII string containing STL data.
-                if (this._isURL(urlOrFileOrData)) {
-                    if (typeof window !== 'undefined') {
-                        // Browser.
-                        // Load the file with XMLHttpRequest.
-                        var request_1 = new XMLHttpRequest();
-                        request_1.open('GET', urlOrFileOrData, true);
-                        request_1.responseType = 'arraybuffer';
-                        request_1.onload = function () {
-                            var stlData = self._parse(request_1.response);
-                            // Call the callback function with the parsed mesh data.
-                            callback(stlData);
-                        };
-                        request_1.send();
-                    }
-                    else {
-                        // Nodejs.
+        STLParser.load = function (urlOrFile, callback) {
+            if (typeof urlOrFile === 'string') {
+                if (typeof window !== 'undefined') {
+                    // Browser.
+                    // Load the file with XMLHttpRequest.
+                    var request_1 = new XMLHttpRequest();
+                    request_1.open('GET', urlOrFile, true);
+                    request_1.responseType = 'arraybuffer';
+                    request_1.onload = function () {
+                        var stlData = STLParser.parse(request_1.response);
                         // Call the callback function with the parsed mesh data.
-                        import('fs').then(function (fs) {
-                            var buffer = fs.readFileSync(urlOrFileOrData);
-                            callback(_this._parse(new Uint8Array(buffer).buffer));
-                        });
-                    }
+                        callback(stlData);
+                    };
+                    request_1.send();
                 }
                 else {
-                    var stlData = this._parse(urlOrFileOrData);
-                    callback(stlData);
+                    // Nodejs.
+                    // Call the callback function with the parsed mesh data.
+                    import('fs').then(function (fs) {
+                        var buffer = fs.readFileSync(urlOrFile);
+                        callback(STLParser.parse(new Uint8Array(buffer).buffer));
+                    });
                 }
             }
-            else if (urlOrFileOrData instanceof Object && typeof urlOrFileOrData.name == 'string') {
+            else {
                 // We only ever hit this in the browser.
                 // Load the file with FileReader.
-                if (!this.reader)
-                    this.reader = new FileReader();
-                this.reader.onload = function () {
-                    var stlData = self._parse(_this.reader.result);
+                var reader_1 = new FileReader();
+                reader_1.onload = function () {
+                    var stlData = STLParser.parse(reader_1.result);
                     // Call the callback function with the parsed mesh data.
                     callback(stlData);
                 };
-                this.reader.readAsArrayBuffer(urlOrFileOrData);
-            }
-            else {
-                // Buffer/ArrayBuffer.
-                var stlData = this._parse(urlOrFileOrData.buffer ? new Uint8Array(urlOrFileOrData).buffer : urlOrFileOrData);
-                callback(stlData);
+                reader_1.readAsArrayBuffer(urlOrFile);
             }
         };
         /**
          * Returns a copy of the stl data, with coincident vertices merged.
          */
         STLParser.mergeVertices = function (stlData) {
-            var vertices = stlData.vertices; stlData.faceNormals;
+            var vertices = stlData.vertices;
             var numFaces = vertices.length / 9;
             var verticesMerged = [];
             var facesIndexed = new Uint32Array(numFaces * 3);
@@ -358,7 +342,7 @@
          */
         STLParser.scaleVerticesToUnitBoundingBox = function (stlData) {
             var vertices = stlData.vertices;
-            var _a = this.calculateBoundingBox(stlData), min = _a.min, max = _a.max;
+            var _a = STLParser.calculateBoundingBox(stlData), min = _a.min, max = _a.max;
             var diff = [max[0] - min[0], max[1] - min[1], max[2] - min[2]];
             var center = [(max[0] + min[0]) / 2, (max[1] + min[1]) / 2, (max[2] + min[2]) / 2];
             var scale = Math.max(diff[0], diff[1], diff[2]);
