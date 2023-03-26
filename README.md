@@ -71,13 +71,13 @@ loadSTL('./teapot.stl', (mesh) => {
 const mesh = parseSTL(fs.readFileSync('./teapot.stl'));
 ```
 
-- `vertices` is an array of length 3 * numVertices containing a flat list of vertex positions in the following order `[x0, y0, z0, x1, y1, z1, ...]`.  Each group of three vertices make up a triangle in the .stl mesh (by default, vertices are not shared between triangles in the .stl format, see `STLParser.mergeVertices(mesh)`).
+- `vertices` is an array of length 3 * numVertices containing a flat list of vertex positions in the following order `[x0, y0, z0, x1, y1, z1, ...]`.  Each group of three vertices make up a triangle in the .stl mesh (by default, vertices are not shared between triangles in the .stl format, see `mergeVertices()` below).
 - `faceNormals` is an array of length 3 * numFaces containing a flat list of face normals in the following order `[nx0, ny0, nz0, nx1, ny1, nz1, ...]`
-- If available, `faceColors` is an array of length 3 * numFaces containing a flat list of face colors in the following order `[r0, g0, b0, r1, g1, b1, ...]`.  Most .stl files do not contain color information and will not return a `faceColors` array.
-- `edges` returns an array containing all unique edges (expressed as pairs of vertex indices) in the mesh.  The edges array is in the form: `[e01, e02, e11, e12, ...]`.  Edges are only calculated when queried and then cached.
-- `boundingBox` returns the min and max of the mesh's bounding box.  min and max are in the form: `[x, y, z]`.
+- If available, `faceColors` is an array of length 3 * numFaces containing a flat list of face colors in the following order `[r0, g0, b0, r1, g1, b1, ...]`.
+- `edges` is an array containing all unique edges (expressed as pairs of vertex indices) in the mesh in the following order: `[e01, e02, e11, e12, ...]`.  Edges are only calculated when queried and then cached.
+- `boundingBox` returns the min and max of the mesh's bounding box, and is in the form: `{ min: [x, y, z], max: [x, y, z] }`.  Bounding box is only calculated when queried and then cached.
 
-the resulting mesh data also exposes some helper functions for analyzing/modifying the geometry:
+The resulting mesh object returned by `parseSTL`, `loadSTL`, and `loadSTLAsync` also exposes some helper functions for analyzing/modifying its geometry:
 
 
 ```js
@@ -85,7 +85,7 @@ mesh.mergeVertices().scaleVerticesToUnitBoundingBox();
 const { faceIndices } = mesh;
 ```
 
-- `STLMesh.mergeVertices()` merges coincident vertices and adds a `faceIndices` array containing triangle face vertex indices.  `faceIndices` has length 3 * numFaces is in the form: `[v01, v02, v03, v11, v12, v13, ...]`.
+- `STLMesh.mergeVertices()` merges coincident vertices and adds a `faceIndices` array containing triangle face vertex indices.  `faceIndices` has length 3 * numFaces and is in the form: `[v01, v02, v03, v11, v12, v13, ...]`.
 - `STLMesh.scaleVerticesToUnitBoundingBox()` scales the `vertices` values (in place) to fit inside a unit box and centered around the origin.
 
 
