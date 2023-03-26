@@ -18,10 +18,8 @@ const PARAMS = {
 
 let mesh, wireframe, rawSTLData;
 
-// Create a new parser instance,
-const parser = new STLParser();
 // Parse the .stl file using the specified file path.
-parser.parse(PARAMS.url, initThreeJSGeometry);
+STLParser.parse(PARAMS.url, initThreeJSGeometry);
 
 // UI
 const pane = new Tweakpane.Pane({
@@ -61,7 +59,7 @@ pane.addInput(PARAMS, 'url', {
 	},
 }).on('change', () => {
 	pane.title = PARAMS.url.split('/').pop();
-	parser.parse(PARAMS.url, initThreeJSGeometry);
+	STLParser.parse(PARAMS.url, initThreeJSGeometry);
 });
 pane.addButton({
 	title: 'Upload .stl (or Drop/Paste)',
@@ -262,7 +260,7 @@ function loadFile(file) {
 	const extension = getExtension(file.name);
 	if (extension !== 'stl') return;
 	pane.title = file.name;
-	parser.parse(file, initThreeJSGeometry);
+	STLParser.parse(file, initThreeJSGeometry);
 	return true;
 }
 
