@@ -238,7 +238,7 @@
         Object.defineProperty(_STLMesh.prototype, "faceIndices", {
             get: function () {
                 if (!this._faceIndices)
-                    throw new Error("stl-parser: Call mergeVertices() before trying to access faceIndices.");
+                    throw new Error("stl-parser: Call STLMesh.mergeVertices() before trying to access faceIndices.");
                 return this._faceIndices;
             },
             set: function (faceIndices) {

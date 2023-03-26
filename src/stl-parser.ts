@@ -273,7 +273,7 @@ class _STLMesh {
 	}
 
 	get faceIndices() {
-		if (!this._faceIndices) throw new Error(`stl-parser: Call mergeVertices() before trying to access faceIndices.`);
+		if (!this._faceIndices) throw new Error(`stl-parser: Call STLMesh.mergeVertices() before trying to access faceIndices.`);
 		return this._faceIndices;
 	}
 
