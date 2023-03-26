@@ -74,11 +74,11 @@ const mesh = parseSTL(fs.readFileSync('./teapot.stl'));
 - `vertices` is an array of length 3 * numVertices containing a flat list of vertex positions in the following order `[x0, y0, z0, x1, y1, z1, ...]`.  Each group of three vertices make up a triangle in the .stl mesh (by default, vertices are not shared between triangles in the .stl format, see `mergeVertices()` below).
 - `faceNormals` is an array of length 3 * numFaces containing a flat list of face normals in the following order `[nx0, ny0, nz0, nx1, ny1, nz1, ...]`
 - If available, `faceColors` is an array of length 3 * numFaces containing a flat list of face colors in the following order `[r0, g0, b0, r1, g1, b1, ...]`.
-- `edges` is an array containing all unique edges (expressed as pairs of vertex indices) in the mesh in the following order: `[e01, e02, e11, e12, ...]`.  Edges are only calculated when queried and then cached.
-- `boundingBox` returns the min and max of the mesh's bounding box, and is in the form: `{ min: [x, y, z], max: [x, y, z] }`.  Bounding box is only calculated when queried and then cached.
+- `edges` is an array containing all unique edges (expressed as pairs of vertex indices) in the mesh in the following order: `[e01, e02, e11, e12, ...]`.  `edges` is calculated when queried and then cached.
+- `boundingBox` returns the min and max of the mesh's bounding box, and is in the form: `{ min: [x, y, z], max: [x, y, z] }`.  `boundingBox` is calculated when queried and then cached.
 
-The resulting mesh object returned by `parseSTL`, `loadSTL`, and `loadSTLAsync` also exposes some helper functions for analyzing/modifying its geometry:
 
+The resulting mesh object returned by `parseSTL`, `loadSTL`, and `loadSTLAsync` also exposes methods for modifying its geometry:
 
 ```js
 mesh.mergeVertices().scaleVerticesToUnitBoundingBox();
