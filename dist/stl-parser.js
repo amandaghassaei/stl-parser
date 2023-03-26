@@ -34,6 +34,7 @@
     // https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js
     var STLParser = /** @class */ (function () {
         function STLParser() {
+            throw new Error("All STLLoader methods are static, don't init with 'new', use STLParser.parse() or STLParser.parseAsync() instead.");
         }
         STLParser._parseBinary = function (data) {
             var reader = new DataView(data);
@@ -115,7 +116,7 @@
                     while ((result = patternNormal.exec(text)) !== null) {
                         // every face have to own ONE valid normal
                         if (normalCountPerFace > 0)
-                            throw new Error('stl-parser: Something isn\'t right with the normal of face number ' + faceCounter);
+                            throw new Error('Problem parsing STL file: something isn\'t right with the normal of face number ' + faceCounter);
                         faceNormals.push(parseFloat(result[1]), parseFloat(result[2]), parseFloat(result[3]));
                         normalCountPerFace++;
                     }
@@ -125,7 +126,7 @@
                     }
                     // each face have to own THREE valid vertices
                     if (vertexCountPerFace !== 3) {
-                        throw new Error('stl-parser: Something isn\'t right with the vertices of face number ' + faceCounter);
+                        throw new Error('Problem parsing STL file: Something isn\'t right with the vertices of face number ' + faceCounter);
                     }
                     faceCounter++;
                 }
@@ -161,7 +162,7 @@
             var solid = [115, 111, 108, 105, 100];
             for (var offset = 0; offset < 5; offset++) {
                 // If "solid" text is matched to the current offset, declare it to be an ASCII STL.
-                if (STLParser._matchDataViewAt(solid, reader, offset))
+                if (this._matchDataViewAt(solid, reader, offset))
                     return false;
             }
             // Couldn't find "solid" text at the beginning; it is binary STL.
@@ -185,36 +186,25 @@
             }
             return buffer;
         };
-        STLParser.prototype._parse = function (data) {
-            var binData = STLParser._ensureBinary(data);
-            return STLParser._isBinary(binData) ?
-                STLParser._parseBinary(binData) :
-                STLParser._parseASCII(STLParser._ensureString(data));
+        STLParser._parse = function (data) {
+            var binData = this._ensureBinary(data);
+            return this._isBinary(binData) ?
+                this._parseBinary(binData) :
+                this._parseASCII(this._ensureString(data));
         };
         STLParser._isURL = function (url) {
             // isURL may be a little fragile.
             return url.slice(-3).toLowerCase() === 'stl';
         };
-        /**
-         * Parse stl file synchronously (node only).
-         */
-        STLParser.prototype.parseSync = function (urlOrData) {
-            if (typeof urlOrData === 'string' && STLParser._isURL(urlOrData)) {
-                if (typeof window !== 'undefined') {
-                    throw new Error('Cannot call STLParser.parseSync() from a browser.');
-                }
-                // Load the file with fs.
-                var fs = require('fs');
-                var fileBuffer = fs.readFileSync(urlOrData);
-                // Without making a copy of fileBuffer below, multiple calls to readFileSync creates problems.
-                return this._parse(new Uint8Array(fileBuffer).buffer);
-            }
-            return this._parse(urlOrData.buffer ? new Uint8Array(urlOrData).buffer : urlOrData);
+        STLParser._loadViaNodejs = function (url, callback) {
+            import('fs').then(function (fs) {
+                callback(fs.readFileSync(url));
+            });
         };
         /**
          * Parse stl file asynchronously (returns Promise).
          */
-        STLParser.prototype.parseAsync = function (urlOrFile) {
+        STLParser.parseAsync = function (urlOrFile) {
             var self = this;
             return new Promise(function (resolve) {
                 self.parse(urlOrFile, function (mesh) {
@@ -226,12 +216,14 @@
          * Parse the .stl file at the specified file path of File object.
          * Made this compatible with Node and the browser, maybe there is a better way?
          */
-        STLParser.prototype.parse = function (urlOrFileOrData, callback) {
+        STLParser.parse = function (urlOrFileOrData, callback) {
+            var _this = this;
             var self = this;
             if (typeof urlOrFileOrData === 'string') {
                 // Could be url or ASCII string containing STL data.
-                if (STLParser._isURL(urlOrFileOrData)) {
+                if (this._isURL(urlOrFileOrData)) {
                     if (typeof window !== 'undefined') {
+                        // Browser.
                         // Load the file with XMLHttpRequest.
                         var request_1 = new XMLHttpRequest();
                         request_1.open('GET', urlOrFileOrData, true);
@@ -244,8 +236,11 @@
                         request_1.send();
                     }
                     else {
+                        // Nodejs.
                         // Call the callback function with the parsed mesh data.
-                        callback(this.parseSync(urlOrFileOrData));
+                        this._loadViaNodejs(urlOrFileOrData, function (buffer) {
+                            callback(_this._parse(new Uint8Array(buffer).buffer));
+                        });
                     }
                 }
                 else {
@@ -256,14 +251,14 @@
             else if (urlOrFileOrData instanceof Object && urlOrFileOrData.hasOwnProperty('fd') && urlOrFileOrData.hasOwnProperty('path')) {
                 // We only ever hit this in the browser.
                 // Load the file with FileReader.
-                if (!STLParser.reader)
-                    STLParser.reader = new FileReader();
-                STLParser.reader.onload = function () {
-                    var stlData = self._parse(STLParser.reader.result);
+                if (!this.reader)
+                    this.reader = new FileReader();
+                this.reader.onload = function () {
+                    var stlData = self._parse(_this.reader.result);
                     // Call the callback function with the parsed mesh data.
                     callback(stlData);
                 };
-                STLParser.reader.readAsArrayBuffer(urlOrFileOrData);
+                this.reader.readAsArrayBuffer(urlOrFileOrData);
             }
             else {
                 // Buffer/ArrayBuffer.
@@ -367,7 +362,7 @@
          */
         STLParser.scaleVerticesToUnitBoundingBox = function (stlData) {
             var vertices = stlData.vertices;
-            var _a = STLParser.calculateBoundingBox(stlData), min = _a.min, max = _a.max;
+            var _a = this.calculateBoundingBox(stlData), min = _a.min, max = _a.max;
             var diff = [max[0] - min[0], max[1] - min[1], max[2] - min[2]];
             var center = [(max[0] + min[0]) / 2, (max[1] + min[1]) / 2, (max[2] + min[2]) / 2];
             var scale = Math.max(diff[0], diff[1], diff[2]);

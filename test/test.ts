@@ -1,82 +1,16 @@
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
-import { STLParser } from '../';
+import { STLData, STLParser } from '../';
 
 const cubeAscii = readFileSync('./test/stl/cubeAscii.stl');
 const cubeBinary = readFileSync('./test/stl/cubeBinary.stl');
 
 describe('STLParser', () => {
-	describe('constructor', () => {
-		it('should init without errors', () => {
-			const parser = new STLParser();
-			expect(parser.constructor).to.equal(STLParser);
-		});
-	});
 	describe('parse', () => {
-		const parser = new STLParser();
-		it('parses cubeAscii.stl', () => {
-			parser.parse('./test/stl/cubeAscii.stl', (stlData) => {
-				const {
-					vertices,
-					faceNormals,
-					faceColors,
-				} = stlData;
-				expect(vertices.length).to.equal(12 * 9);
-				expect(faceNormals.length).to.equal(12 * 3);
-				expect(faceColors).to.equal(undefined);
-				expect(vertices.slice(0, 3)).to.deep.equal([10, 0, -10]);
-				expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
+		it('parses cubeAscii.stl', async () => {
+			const stlData = await new Promise<STLData>(resolve => {
+				STLParser.parse('./test/stl/cubeAscii.stl', resolve);
 			});
-		});
-		it('parses cubeAscii data', () => {
-			parser.parse(cubeAscii, (stlData) => {
-				const {
-					vertices,
-					faceNormals,
-					faceColors,
-				} = stlData;
-				expect(vertices.length).to.equal(12 * 9);
-				expect(faceNormals.length).to.equal(12 * 3);
-				expect(faceColors).to.equal(undefined);
-				expect(vertices.slice(0, 3)).to.deep.equal([10, 0, -10]);
-				expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
-			});
-		});
-		it('parses cubeBinary.stl', () => {
-			parser.parse('./test/stl/cubeBinary.stl', (stlData) => {
-				const {
-					vertices,
-					faceNormals,
-					faceColors,
-				} = stlData;
-				expect(vertices.length).to.equal(12 * 9);
-				expect(faceNormals.length).to.equal(12 * 3);
-				expect(faceColors!.length).to.equal(12 * 3);
-				expect(vertices.slice(0, 3)).to.deep.equal(new Float32Array([10, 0, -10]));
-			expect(faceNormals.slice(0, 3)).to.deep.equal(new Float32Array([0, 0, -1]));
-			expect(faceColors!.slice(0, 3)).to.deep.equal(new Float32Array([0.6129032373428345, 0.6129032373428345, 0.6129032373428345]));
-			});
-		});
-		it('parses cubeBinary data', () => {
-			parser.parse(cubeBinary, (stlData) => {
-				const {
-					vertices,
-					faceNormals,
-					faceColors,
-				} = stlData;
-				expect(vertices.length).to.equal(12 * 9);
-				expect(faceNormals.length).to.equal(12 * 3);
-				expect(faceColors!.length).to.equal(12 * 3);
-				expect(vertices.slice(0, 3)).to.deep.equal(new Float32Array([10, 0, -10]));
-			expect(faceNormals.slice(0, 3)).to.deep.equal(new Float32Array([0, 0, -1]));
-			expect(faceColors!.slice(0, 3)).to.deep.equal(new Float32Array([0.6129032373428345, 0.6129032373428345, 0.6129032373428345]));
-			});
-		});
-	});
-	describe('parseSync', () => {
-		const parser = new STLParser();
-		it('parses cubeAscii.stl', () => {
-			const stlData = parser.parseSync('./test/stl/cubeAscii.stl');
 			const {
 				vertices,
 				faceNormals,
@@ -88,8 +22,10 @@ describe('STLParser', () => {
 			expect(vertices.slice(0, 3)).to.deep.equal([10, 0, -10]);
 			expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
 		});
-		it('parses cubeAscii data', () => {
-			const stlData = parser.parseSync(cubeAscii);
+		it('parses cubeAscii data', async () => {
+			const stlData = await new Promise<STLData>(resolve => {
+				STLParser.parse(cubeAscii, resolve);
+			});
 			const {
 				vertices,
 				faceNormals,
@@ -101,8 +37,10 @@ describe('STLParser', () => {
 			expect(vertices.slice(0, 3)).to.deep.equal([10, 0, -10]);
 			expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
 		});
-		it('parses cubeBinary.stl', () => {
-			const stlData = parser.parseSync('./test/stl/cubeBinary.stl');
+		it('parses cubeBinary.stl', async () => {
+			const stlData = await new Promise<STLData>(resolve => {
+				STLParser.parse('./test/stl/cubeBinary.stl', resolve);
+			});
 			const {
 				vertices,
 				faceNormals,
@@ -115,8 +53,10 @@ describe('STLParser', () => {
 			expect(faceNormals.slice(0, 3)).to.deep.equal(new Float32Array([0, 0, -1]));
 			expect(faceColors!.slice(0, 3)).to.deep.equal(new Float32Array([0.6129032373428345, 0.6129032373428345, 0.6129032373428345]));
 		});
-		it('parses cubeBinary data', () => {
-			const stlData = parser.parseSync(cubeBinary);
+		it('parses cubeBinary data', async () => {
+			const stlData = await new Promise<STLData>(resolve => {
+				STLParser.parse(cubeBinary, resolve);
+			});
 			const {
 				vertices,
 				faceNormals,
@@ -131,9 +71,8 @@ describe('STLParser', () => {
 		});
 	});
 	describe('parseAsync', () => {
-		const parser = new STLParser();
 		it('parses cubeAscii.stl', async () => {
-			const stlData = await parser.parseAsync('./test/stl/cubeAscii.stl');
+			const stlData = await STLParser.parseAsync('./test/stl/cubeAscii.stl');
 			const {
 				vertices,
 				faceNormals,
@@ -146,7 +85,7 @@ describe('STLParser', () => {
 			expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
 		});
 		it('parses cubeAscii data', async () => {
-			const stlData = await parser.parseAsync(cubeAscii);
+			const stlData = await STLParser.parseAsync(cubeAscii);
 			const {
 				vertices,
 				faceNormals,
@@ -159,7 +98,7 @@ describe('STLParser', () => {
 			expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
 		});
 		it('parses cubeBinary.stl', async () => {
-			const stlData = await parser.parseAsync('./test/stl/cubeBinary.stl');
+			const stlData = await STLParser.parseAsync('./test/stl/cubeBinary.stl');
 			const {
 				vertices,
 				faceNormals,
@@ -173,7 +112,7 @@ describe('STLParser', () => {
 			expect(faceColors!.slice(0, 3)).to.deep.equal(new Float32Array([0.6129032373428345, 0.6129032373428345, 0.6129032373428345]));
 		});
 		it('parses cubeBinary data', async () => {
-			const stlData = await parser.parseAsync(cubeBinary);
+			const stlData = await STLParser.parseAsync(cubeBinary);
 			const {
 				vertices,
 				faceNormals,
@@ -188,15 +127,14 @@ describe('STLParser', () => {
 		});
 	});
 	describe('helper functions', () => {
-		const parser = new STLParser();
-		it('merges vertices and indexed faces', () => {
-			const stlData = STLParser.mergeVertices(parser.parseSync('./test/stl/cubeAscii.stl'));
+		it('merges vertices and indexed faces', async () => {
+			const stlData = await STLParser.parseAsync('./test/stl/cubeAscii.stl');
 			const {
 				vertices,
 				faceNormals,
 				faceColors,
 				faceIndices,
-			} = stlData;
+			} = STLParser.mergeVertices(stlData);
 			expect(vertices.length).to.equal(8 * 3);
 			expect(faceNormals.length).to.equal(12 * 3);
 			expect(faceColors).to.equal(undefined);
@@ -205,10 +143,11 @@ describe('STLParser', () => {
 				5, 0, 2, 6, 4, 7, 7, 4, 5,
 				1, 6, 3, 3, 6, 7, 3, 7, 2,
 				2, 7, 5, 1, 0, 6, 6, 0, 4
-			]));
+			]));			
 		});
-		it('calculates edges', () => {
-			parser.parse('./test/stl/cubeAscii.stl', (stlData) => {
+		it('calculates edges', async () => {
+			{
+				const stlData = await STLParser.parseAsync('./test/stl/cubeAscii.stl');
 				let edges = STLParser.calculateEdges(stlData);
 				expect(edges).to.deep.equal(new Uint32Array([
 					0,  1,  1,  2,  2,  0,  3,  4,  4,  5,  5,  3,
@@ -228,8 +167,9 @@ describe('STLParser', () => {
 					6, 6, 3, 7, 3, 7, 2, 0, 6
 				]);
 				expect(edges.length).to.equal(stlDataMerged.faceIndices!.length);
-			});
-			parser.parse('./test/stl/cubeBinary.stl', (stlData) => {
+			}
+			{
+				const stlData = await STLParser.parseAsync('./test/stl/cubeBinary.stl');
 				let edges = STLParser.calculateEdges(stlData);
 				expect(edges).to.deep.equal(new Uint32Array([
 					0,  1,  1,  2,  2,  0,  3,  4,  4,  5,  5,  3,
@@ -249,33 +189,37 @@ describe('STLParser', () => {
 					6, 6, 3, 7, 3, 7, 2, 0, 6
 				]);
 				expect(edges.length).to.equal(stlDataMerged.faceIndices!.length);
-			});
+			}
 		});
-		it('calculates bounding box', () => {
-			parser.parse('./test/stl/cubeAscii.stl', (stlData) => {
+		it('calculates bounding box', async () => {
+			{
+				const stlData = await STLParser.parseAsync('./test/stl/cubeAscii.stl');
 				const { min, max } = STLParser.calculateBoundingBox(stlData);
 				expect(min).to.deep.equal([0, 0, -10]);
 				expect(max).to.deep.equal([10, 10, 0]);
-			});
-			parser.parse('./test/stl/cubeBinary.stl', (stlData) => {
+			}
+			{
+				const stlData = await STLParser.parseAsync('./test/stl/cubeBinary.stl');
 				const { min, max } = STLParser.calculateBoundingBox(stlData);
 				expect(min).to.deep.equal([0, 0, -10]);
 				expect(max).to.deep.equal([10, 10, 0]);
-			});
+			}
 		});
-		it('scales the vertex positions to unit bounding box', () => {
-			parser.parse('./test/stl/cubeAscii.stl', (stlData) => {
+		it('scales the vertex positions to unit bounding box', async () => {
+			{
+				const stlData = await STLParser.parseAsync('./test/stl/cubeAscii.stl');
 				stlData.vertices = STLParser.scaleVerticesToUnitBoundingBox(stlData);
 				const { min, max } = STLParser.calculateBoundingBox(stlData);
 				expect(min).to.deep.equal([-0.5, -0.5, -0.5]);
 				expect(max).to.deep.equal([0.5, 0.5, 0.5]);
-			});
-			parser.parse('./test/stl/cubeBinary.stl', (stlData) => {
+			}
+			{
+				const stlData = await STLParser.parseAsync('./test/stl/cubeBinary.stl');
 				stlData.vertices = STLParser.scaleVerticesToUnitBoundingBox(stlData);
 				const { min, max } = STLParser.calculateBoundingBox(stlData);
 				expect(min).to.deep.equal([-0.5, -0.5, -0.5]);
 				expect(max).to.deep.equal([0.5, 0.5, 0.5]);
-			});
+			}
 		});
 	});
 });

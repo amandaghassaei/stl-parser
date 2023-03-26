@@ -54,12 +54,9 @@ const { STLParser } = STLParserLib;
 ## Use
 
 ```js
-// Create a new parser instance,
-const parser = new STLParser();
-
 // Parse the .stl file using the specified file path.
 // You can also pass in a File or Buffer object to parse.
-parser.parse('./teapot.stl', (mesh) => {
+STLParser.parse('./teapot.stl', (mesh) => {
   const {
     vertices,
     faceNormals,
@@ -68,9 +65,7 @@ parser.parse('./teapot.stl', (mesh) => {
 });
 
 // Also try:
-// const mesh = await parser.parseAsync('./teapot.stl');
-// Nodejs only:
-// const mesh = parser.parseSync('./teapot.stl');
+// const mesh = await STLParser.parseAsync('./teapot.stl');
 ```
 
 - `vertices` is an array of length 3 * numVertices containing a flat list of vertex positions in the following order `[x0, y0, z0, x1, y1, z1, ...]`.  Each group of three vertices make up a triangle in the .stl mesh (by default, vertices are not shared between triangles in the .stl format, see `STLParser.mergeVertices(mesh)`).
