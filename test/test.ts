@@ -4,6 +4,7 @@ import { parseSTL, loadSTL, loadSTLAsync, STLMesh } from '../';
 
 const cubeAscii = readFileSync('./test/stl/cubeAscii.stl');
 const cubeBinary = readFileSync('./test/stl/cubeBinary.stl');
+const { cubeString } = require('./stl/cubeString');
 
 describe('stl-parser', () => {
 	describe('parseSTL', () => {
@@ -31,6 +32,18 @@ describe('stl-parser', () => {
 			expect(vertices.slice(0, 3)).to.deep.equal(new Float32Array([10, 0, -10]));
 			expect(faceNormals.slice(0, 3)).to.deep.equal(new Float32Array([0, 0, -1]));
 			expect(faceColors!.slice(0, 3)).to.deep.equal(new Float32Array([0.6129032373428345, 0.6129032373428345, 0.6129032373428345]));
+		});
+		it('parses cube string data', () => {
+			const {
+				vertices,
+				faceNormals,
+				faceColors,
+			} = parseSTL(cubeString);
+			expect(vertices.length).to.equal(12 * 9);
+			expect(faceNormals.length).to.equal(12 * 3);
+			expect(faceColors).to.equal(undefined);
+			expect(vertices.slice(0, 3)).to.deep.equal([10, 0, -10]);
+			expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
 		});
 	});
 	describe('loadSTL', () => {

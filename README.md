@@ -67,7 +67,7 @@ loadSTL('./teapot.stl', (mesh) => {
 // Also try:
 // const mesh = await loadSTLAsync('./teapot.stl');
 
-// Or parse synchronously.
+// Or parse file buffer or string synchronously.
 const mesh = parseSTL(fs.readFileSync('./teapot.stl'));
 ```
 
