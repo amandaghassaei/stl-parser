@@ -8,7 +8,7 @@ export function parseSTL(data: Buffer | ArrayBuffer | string): STLMesh {
 }
 
 /**
- * Parse .stl file asynchronously (returns Promise).
+ * Load and parse the .stl asynchronously from a specified url or File object (returns Promise).
  */
 export function loadSTLAsync(urlOrFile: string | File) {
 	return new Promise<STLMesh>((resolve) => {
@@ -18,8 +18,19 @@ export function loadSTLAsync(urlOrFile: string | File) {
 	});
 }
 
+export type STLMesh = {
+	readonly vertices: Float32Array | number[];
+	readonly faceNormals: Float32Array | number[];
+	readonly edges: Uint32Array | number[];
+	readonly faceColors?: Float32Array;
+	readonly faceIndices: Uint32Array;
+	readonly boundingBox: { min:number[], max: number[] };
+	mergeVertices: () => STLMesh;
+	scaleVerticesToUnitBoundingBox: () => STLMesh;
+}
+
 /**
- * Parse the .stl file at the specified file path or File object.
+ * Load and parse the .stl from a specified url or File object.
  */
 export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => void) {
 	if (typeof urlOrFile === 'string') {
@@ -413,15 +424,4 @@ class _STLMesh {
 		delete this._boundingBox; // Invalidate previously calculated bounding box.
 		return this;
 	}
-}
-
-export type STLMesh = {
-	readonly vertices: Float32Array | number[];
-	readonly faceNormals: Float32Array | number[];
-	readonly edges: Uint32Array | number[];
-	readonly faceColors?: Float32Array;
-	readonly faceIndices: Uint32Array;
-	readonly boundingBox: { min:number[], max: number[] };
-	mergeVertices: () => STLMesh;
-	scaleVerticesToUnitBoundingBox: () => STLMesh;
 }

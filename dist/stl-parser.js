@@ -11,7 +11,7 @@
         return new _STLMesh(data);
     }
     /**
-     * Parse .stl file asynchronously (returns Promise).
+     * Load and parse the .stl asynchronously from a specified url or File object (returns Promise).
      */
     function loadSTLAsync(urlOrFile) {
         return new Promise(function (resolve) {
@@ -21,7 +21,7 @@
         });
     }
     /**
-     * Parse the .stl file at the specified file path or File object.
+     * Load and parse the .stl from a specified url or File object.
      */
     function loadSTL(urlOrFile, callback) {
         if (typeof urlOrFile === 'string') {
