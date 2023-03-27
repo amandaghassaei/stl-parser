@@ -60,6 +60,8 @@
             reader_1.readAsArrayBuffer(urlOrFile);
         }
     }
+    // Based on: https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js
+    // Define the STLMesh class.
     var _STLMesh = /** @class */ (function () {
         function _STLMesh(data) {
             if (typeof data !== 'string') {

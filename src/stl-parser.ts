@@ -1,5 +1,3 @@
-
-
 /**
  * Synchronously parse an already loaded .stl file buffer or string.
  */
@@ -16,17 +14,6 @@ export function loadSTLAsync(urlOrFile: string | File) {
 			resolve(mesh);
 		});
 	});
-}
-
-export type STLMesh = {
-	readonly vertices: Float32Array | number[];
-	readonly faceNormals: Float32Array | number[];
-	readonly edges: Uint32Array | number[];
-	readonly faceColors?: Float32Array;
-	readonly faceIndices: Uint32Array;
-	readonly boundingBox: { min:number[], max: number[] };
-	mergeVertices: () => STLMesh;
-	scaleVerticesToUnitBoundingBox: () => STLMesh;
 }
 
 /**
@@ -68,6 +55,20 @@ export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => v
 	}
 }
 
+// Export just the type, keep the class private.
+export type STLMesh = {
+	readonly vertices: Float32Array | number[];
+	readonly faceNormals: Float32Array | number[];
+	readonly edges: Uint32Array | number[];
+	readonly faceColors?: Float32Array;
+	readonly faceIndices: Uint32Array;
+	readonly boundingBox: { min:number[], max: number[] };
+	mergeVertices: () => STLMesh;
+	scaleVerticesToUnitBoundingBox: () => STLMesh;
+}
+
+// Based on: https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js
+// Define the STLMesh class.
 class _STLMesh {
 	private _vertices: Float32Array | number[];
 	readonly faceNormals: Float32Array | number[];
