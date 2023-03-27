@@ -39,7 +39,7 @@ export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => v
 			// Call the callback function with the parsed mesh data.
 			import('fs').then((fs) => {
 				const buffer = fs.readFileSync(urlOrFile);
-				callback(parseSTL(new Uint8Array(buffer).buffer));
+				callback(parseSTL(buffer));
 			});
 		}
 	} else {

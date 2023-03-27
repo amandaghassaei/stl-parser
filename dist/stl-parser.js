@@ -44,7 +44,7 @@
                 // Call the callback function with the parsed mesh data.
                 import('fs').then(function (fs) {
                     var buffer = fs.readFileSync(urlOrFile);
-                    callback(parseSTL(new Uint8Array(buffer).buffer));
+                    callback(parseSTL(buffer));
                 });
             }
         }
