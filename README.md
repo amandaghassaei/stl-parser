@@ -106,6 +106,33 @@ const { faceIndices } = mesh;
 - `STLMesh.scaleVerticesToUnitBoundingBox()` scales the `vertices` values (in place) to fit inside a unit box centered around the origin.
 
 
+## Build Notes
+
+This library imports `fs` in Nodejs environments to load files from a url string.  This code is never hit in the browser environment (the browser uses a XMLHttpRequest instead), but you may see build warnings due to the `import('fs')` statement in the code.  (I'm wondering if there is a better way to handle this that is compatible for both Nodejs and browser environments, please let me know if you have ideas.)
+
+To fix this warning, you need to set `fs` as an external dependency in your build settings:
+
+```js
+// rollup.config.js
+export default {
+  ...
+  external: ['fs'],
+};
+```
+
+```js
+// vite.config.js
+export default {
+  build: {
+		rollupOptions: {
+			external: ['fs'],
+		},
+	}
+  ...
+}
+```
+
+
 ## Limitations
 
 - See limitations listed in [Threejs STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js).  If you have a file that is not being parsed correctly, please upload it in an [Issue](https://github.com/amandaghassaei/stl-parser/issues) so it can be added as a test case.  Pull requests welcome.
