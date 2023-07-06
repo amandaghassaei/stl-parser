@@ -54,7 +54,7 @@ const { parseSTL, loadSTL, loadSTLAsync } = STLParserLib;
 
 ## Use
 
-Full docs at [docs](https://github.com/amandaghassaei/stl-parser/blob/main/docs/).
+Full API documentation in [docs](https://github.com/amandaghassaei/stl-parser/blob/main/docs/).
 
 ```js
 // Load and parse the .stl file using url or File object.
