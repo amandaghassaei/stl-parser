@@ -155,7 +155,7 @@ This work is licensed under an [MIT License](https://github.com/amandaghassaei/s
 
 ## Related Libraries
 
-- [msh-parser](https://github.com/amandaghassaei/msh-parser) - finite element .msh format parser
+- [msh-parser](https://www.npmjs.com/package/msh-parser) - finite element .msh format parser
 
 
 ## Development
