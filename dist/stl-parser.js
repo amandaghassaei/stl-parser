@@ -22,6 +22,7 @@ export function loadSTL(urlOrFile, callback) {
     if (typeof urlOrFile === 'string') {
         // Made this compatible with Node and the browser, maybe there is a better way?
         if (typeof window !== 'undefined') {
+            /* c8 ignore start */
             // Browser.
             // Load the file with XMLHttpRequest.
             const request = new XMLHttpRequest();
@@ -33,6 +34,7 @@ export function loadSTL(urlOrFile, callback) {
                 callback(mesh);
             };
             request.send();
+            /* c8 ignore stop */
         }
         else {
             // Nodejs.
@@ -44,6 +46,7 @@ export function loadSTL(urlOrFile, callback) {
         }
     }
     else {
+        /* c8 ignore start */
         // We only ever hit this in the browser.
         // Load the file with FileReader.
         const reader = new FileReader();
@@ -54,6 +57,7 @@ export function loadSTL(urlOrFile, callback) {
         };
         reader.readAsArrayBuffer(urlOrFile);
     }
+    /* c8 ignore stop */
 }
 // Based on: https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js
 // Define the STLMesh class.
@@ -160,10 +164,12 @@ class _STLMesh {
                     vertices.push(parseFloat(result[1]), parseFloat(result[2]), parseFloat(result[3]));
                     vertexCountPerFace++;
                 }
-                // each face have to own THREE valid vertices
+                // Each face have to own THREE valid vertices
+                /* c8 ignore start */
                 if (vertexCountPerFace !== 3) {
                     throw new Error('stl-parser: Something isn\'t right with the vertices of face number ' + faceCounter);
                 }
+                /* c8 ignore stop */
                 faceCounter++;
             }
         }
@@ -225,19 +231,21 @@ class _STLMesh {
     get vertices() {
         return this._vertices;
     }
-    /* c8 ignore next */
+    /* c8 ignore start */
     set vertices(vertices) {
         throw new Error(`No vertices setter.`);
     }
+    /* c8 ignore stop */
     get faceIndices() {
         if (!this._faceIndices)
             throw new Error(`stl-parser: Call STLMesh.mergeVertices() before trying to access faceIndices.`);
         return this._faceIndices;
     }
-    /* c8 ignore next */
+    /* c8 ignore start */
     set faceIndices(faceIndices) {
         throw new Error(`No faceIndices setter.`);
     }
+    /* c8 ignore stop */
     /**
      * Merge coincident vertices and index faces.
      */
@@ -267,10 +275,11 @@ class _STLMesh {
         }
         return this._edges;
     }
-    /* c8 ignore next */
+    /* c8 ignore start */
     set edges(edges) {
         throw new Error(`No edges setter.`);
     }
+    /* c8 ignore stop */
     /**
      * Returns the bounding box of the mesh.
      */
@@ -281,10 +290,11 @@ class _STLMesh {
         }
         return this._boundingBox;
     }
-    /* c8 ignore next */
+    /* c8 ignore start */
     set boundingBox(boundingBox) {
         throw new Error(`No boundingBox setter.`);
     }
+    /* c8 ignore stop */
     /**
      * Scales vertex positions (in place) to unit bounding box and centers around origin.
      */

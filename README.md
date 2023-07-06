@@ -5,7 +5,7 @@
 [![Build Size](https://img.shields.io/bundlephobia/min/@amandaghassaei/stl-parser)](https://bundlephobia.com/result?p=@amandaghassaei/stl-parser)
 [![NPM Downloads](https://img.shields.io/npm/dw/@amandaghassaei/stl-parser)](https://www.npmtrends.com/@amandaghassaei/stl-parser)
 [![License](https://img.shields.io/npm/l/@amandaghassaei/stl-parser)](https://github.com/amandaghassaei/stl-parser/blob/main/LICENSE.txt)
-![](https://img.shields.io/badge/Coverage-88%25-83A603.svg?prefix=$coverage$)
+![](https://img.shields.io/badge/Coverage-95%25-83A603.svg?prefix=$coverage$)
 
 Standalone module for loading and parsing binary/ASCII STL files – unit tested and written in TypeScript.  Parsing code based on [Threejs STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js).
 
