@@ -69,12 +69,12 @@ export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => v
 
 // Export just the type, keep the class private.
 export type STLMesh = {
-	readonly vertices: Float32Array | number[];
-	readonly faceNormals: Float32Array | number[];
-	readonly edges: Uint32Array | number[];
+	readonly vertices: Float32Array;
+	readonly faceNormals: Float32Array;
+	readonly edges: Uint32Array;
 	readonly faceColors?: Float32Array;
 	readonly faceIndices: Uint32Array;
-	readonly boundingBox: { min:number[], max: number[] };
+	readonly boundingBox: { min: [number, number, number], max: [number, number, number] };
 	mergeVertices: () => STLMesh;
 	scaleVerticesToUnitBoundingBox: () => STLMesh;
 }
@@ -82,11 +82,11 @@ export type STLMesh = {
 // Based on: https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js
 // Define the STLMesh class.
 class _STLMesh {
-	private _vertices: Float32Array | number[];
-	readonly faceNormals: Float32Array | number[];
+	private _vertices: Float32Array;
+	readonly faceNormals: Float32Array;
 	readonly faceColors?: Float32Array;
 	private _faceIndices?: Uint32Array;
-	private _edges?: Uint32Array | number[];
+	private _edges?: Uint32Array;
 	private _boundingBox?: { min: [number, number, number], max: [number, number, number] };
 
 	constructor(data: Buffer | ArrayBuffer | string) {
@@ -96,7 +96,11 @@ class _STLMesh {
 		const binData = _STLMesh._ensureBinary(data);
 		const { vertices, faceNormals, faceColors } = _STLMesh._isBinary(binData) ?
 			_STLMesh._parseBinary(binData) :
-			_STLMesh._parseASCII(_STLMesh._ensureString(data)) as { vertices: number[], faceNormals: number[], faceColors?: Float32Array };
+			_STLMesh._parseASCII(_STLMesh._ensureString(data)) as {
+				vertices: Float32Array;
+				faceNormals: Float32Array;
+				faceColors?: Float32Array;
+			};
 		
 		this._vertices = vertices;
 		this.faceNormals = faceNormals;
@@ -230,8 +234,8 @@ class _STLMesh {
 		}
 
 		return {
-			vertices,
-			faceNormals,
+			vertices: new Float32Array(vertices),
+			faceNormals: new Float32Array(faceNormals),
 		};
 	}
 
@@ -294,7 +298,7 @@ class _STLMesh {
 	}
 
 	/* c8 ignore start */
-	set vertices(vertices: Float32Array | number[]) {
+	set vertices(vertices: Float32Array) {
 		throw new Error(`No vertices setter.`);
 	}
 	/* c8 ignore stop */
@@ -318,7 +322,7 @@ class _STLMesh {
 			verticesMerged,
 			facesIndexed,
 		} = mergeVertices(this);
-		this._vertices = verticesMerged;
+		this._vertices = new Float32Array(verticesMerged);
 		this._faceIndices = facesIndexed;
 		delete this._edges; // Invalidate previously calculated edges.
 		return this;
@@ -330,10 +334,10 @@ class _STLMesh {
 	get edges() {
 		if (!this._edges) {
 			const { _faceIndices } = this;
-			let edges: Uint32Array | number[];
+			let edges: Uint32Array;
 			if (_faceIndices) {
 				// Handle edges on indexed faces.
-				edges = calcEdgesFromIndexedFaces(this);
+				edges = new Uint32Array(calcEdgesFromIndexedFaces(this));
 			} else {
 				// Vertices are grouped in sets of three to a face.
 				edges = calcEdgesFromNonIndexedFaces(this);
@@ -344,7 +348,7 @@ class _STLMesh {
 	}
 
 	/* c8 ignore start */
-	set edges(edges: Uint32Array | number[]) {
+	set edges(edges: Uint32Array) {
 		throw new Error(`No edges setter.`);
 	}
 	/* c8 ignore stop */

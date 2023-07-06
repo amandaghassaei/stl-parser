@@ -18,8 +18,8 @@ describe('stl-parser', () => {
 			expect(vertices.length).to.equal(12 * 9);
 			expect(faceNormals.length).to.equal(12 * 3);
 			expect(faceColors).to.equal(undefined);
-			expect(vertices.slice(0, 3)).to.deep.equal([10, 0, -10]);
-			expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
+			expect(vertices.slice(0, 3)).to.deep.equal(new Float32Array([10, 0, -10]));
+			expect(faceNormals.slice(0, 3)).to.deep.equal(new Float32Array([0, 0, -1]));
 		});
 		it('parses cube binary data', () => {
 			const {
@@ -43,8 +43,8 @@ describe('stl-parser', () => {
 			expect(vertices.length).to.equal(12 * 9);
 			expect(faceNormals.length).to.equal(12 * 3);
 			expect(faceColors).to.equal(undefined);
-			expect(vertices.slice(0, 3)).to.deep.equal([10, 0, -10]);
-			expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
+			expect(vertices.slice(0, 3)).to.deep.equal(new Float32Array([10, 0, -10]));
+			expect(faceNormals.slice(0, 3)).to.deep.equal(new Float32Array([0, 0, -1]));
 		});
 	});
 	describe('loadSTL', () => {
@@ -60,8 +60,8 @@ describe('stl-parser', () => {
 			expect(vertices.length).to.equal(12 * 9);
 			expect(faceNormals.length).to.equal(12 * 3);
 			expect(faceColors).to.equal(undefined);
-			expect(vertices.slice(0, 3)).to.deep.equal([10, 0, -10]);
-			expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
+			expect(vertices.slice(0, 3)).to.deep.equal(new Float32Array([10, 0, -10]));
+			expect(faceNormals.slice(0, 3)).to.deep.equal(new Float32Array([0, 0, -1]));
 		});
 		it('loads cubeBinary.stl', async () => {
 			const stlData = await new Promise<STLMesh>(resolve => {
@@ -90,8 +90,8 @@ describe('stl-parser', () => {
 			expect(vertices.length).to.equal(12 * 9);
 			expect(faceNormals.length).to.equal(12 * 3);
 			expect(faceColors).to.equal(undefined);
-			expect(vertices.slice(0, 3)).to.deep.equal([10, 0, -10]);
-			expect(faceNormals.slice(0, 3)).to.deep.equal([0, 0, -1]);
+			expect(vertices.slice(0, 3)).to.deep.equal(new Float32Array([10, 0, -10]));
+			expect(faceNormals.slice(0, 3)).to.deep.equal(new Float32Array([0, 0, -1]));
 		});
 		it('loads cubeBinary.stl', async () => {
 			const {
@@ -138,12 +138,12 @@ describe('stl-parser', () => {
 				]));
 				expect(mesh.edges.length).to.equal(mesh.vertices.length / 3 * 2);
 				mesh.mergeVertices();
-				expect(mesh.edges).to.deep.equal([
+				expect(mesh.edges).to.deep.equal(new Uint32Array([
 					0, 1, 1, 2, 2, 0, 1, 3, 3,
 					2, 4, 0, 0, 5, 5, 4, 2, 5,
 					6, 4, 4, 7, 7, 6, 5, 7, 1,
 					6, 6, 3, 7, 3, 7, 2, 0, 6
-				]);
+				]));
 				expect(mesh.edges.length).to.equal(mesh.faceIndices.length);
 			}
 			{
@@ -158,12 +158,12 @@ describe('stl-parser', () => {
 				]));
 				expect(mesh.edges.length).to.equal(mesh.vertices.length / 3 * 2);
 				mesh.mergeVertices();
-				expect(mesh.edges).to.deep.equal([
+				expect(mesh.edges).to.deep.equal(new Uint32Array([
 					0, 1, 1, 2, 2, 0, 1, 3, 3,
 					2, 4, 0, 0, 5, 5, 4, 2, 5,
 					6, 4, 4, 7, 7, 6, 5, 7, 1,
 					6, 6, 3, 7, 3, 7, 2, 0, 6
-				]);
+				]));
 				expect(mesh.edges.length).to.equal(mesh.faceIndices.length);
 			}
 		});

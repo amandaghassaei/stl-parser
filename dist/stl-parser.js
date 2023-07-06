@@ -174,8 +174,8 @@ class _STLMesh {
             }
         }
         return {
-            vertices,
-            faceNormals,
+            vertices: new Float32Array(vertices),
+            faceNormals: new Float32Array(faceNormals),
         };
     }
     static _matchDataViewAt(query, reader, offset) {
@@ -251,7 +251,7 @@ class _STLMesh {
      */
     mergeVertices() {
         const { verticesMerged, facesIndexed, } = mergeVertices(this);
-        this._vertices = verticesMerged;
+        this._vertices = new Float32Array(verticesMerged);
         this._faceIndices = facesIndexed;
         delete this._edges; // Invalidate previously calculated edges.
         return this;
@@ -265,7 +265,7 @@ class _STLMesh {
             let edges;
             if (_faceIndices) {
                 // Handle edges on indexed faces.
-                edges = calcEdgesFromIndexedFaces(this);
+                edges = new Uint32Array(calcEdgesFromIndexedFaces(this));
             }
             else {
                 // Vertices are grouped in sets of three to a face.

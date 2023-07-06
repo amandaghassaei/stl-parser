@@ -24,14 +24,14 @@
 
 | Name | Type |
 | :------ | :------ |
-| `vertices` | `Float32Array` \| `number`[] |
-| `faceNormals` | `Float32Array` \| `number`[] |
-| `edges` | `Uint32Array` \| `number`[] |
+| `vertices` | `Float32Array` |
+| `faceNormals` | `Float32Array` |
+| `edges` | `Uint32Array` |
 | `faceColors?` | `Float32Array` |
 | `faceIndices` | `Uint32Array` |
-| `boundingBox` | { `min`: `number`[] ; `max`: `number`[]  } |
-| `boundingBox.min` | `number`[] |
-| `boundingBox.max` | `number`[] |
+| `boundingBox` | { `min`: [`number`, `number`, `number`] ; `max`: [`number`, `number`, `number`]  } |
+| `boundingBox.min` | [`number`, `number`, `number`] |
+| `boundingBox.max` | [`number`, `number`, `number`] |
 | `mergeVertices` | () => [`STLMesh`](README.md#stlmesh) |
 | `scaleVerticesToUnitBoundingBox` | () => [`STLMesh`](README.md#stlmesh) |
 

@@ -12,14 +12,14 @@ export declare function loadSTLAsync(urlOrFile: string | File): Promise<STLMesh>
  */
 export declare function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => void): void;
 export type STLMesh = {
-    readonly vertices: Float32Array | number[];
-    readonly faceNormals: Float32Array | number[];
-    readonly edges: Uint32Array | number[];
+    readonly vertices: Float32Array;
+    readonly faceNormals: Float32Array;
+    readonly edges: Uint32Array;
     readonly faceColors?: Float32Array;
     readonly faceIndices: Uint32Array;
     readonly boundingBox: {
-        min: number[];
-        max: number[];
+        min: [number, number, number];
+        max: [number, number, number];
     };
     mergeVertices: () => STLMesh;
     scaleVerticesToUnitBoundingBox: () => STLMesh;
