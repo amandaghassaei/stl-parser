@@ -31,6 +31,7 @@ export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => v
 	if (typeof urlOrFile === 'string') {
 		// Made this compatible with Node and the browser, maybe there is a better way?
 		if (typeof window !== 'undefined') {
+			/* c8 ignore start */
 			// Browser.
 			// Load the file with XMLHttpRequest.
 			const request = new XMLHttpRequest();
@@ -42,6 +43,7 @@ export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => v
 				callback(mesh);
 			};
 			request.send();
+			/* c8 ignore stop */
 		} else {
 			// Nodejs.
 			// Call the callback function with the parsed mesh data.
@@ -51,6 +53,7 @@ export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => v
 			});
 		}
 	} else {
+		/* c8 ignore start */
 		// We only ever hit this in the browser.
 		// Load the file with FileReader.
 		const reader = new FileReader();
@@ -61,6 +64,7 @@ export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => v
 		}
 		reader.readAsArrayBuffer(urlOrFile as File);
 	}
+	/* c8 ignore stop */
 }
 
 // Export just the type, keep the class private.
@@ -214,10 +218,12 @@ class _STLMesh {
 					);
 					vertexCountPerFace++;
 				}
-				// each face have to own THREE valid vertices
+				// Each face have to own THREE valid vertices
+				/* c8 ignore start */
 				if ( vertexCountPerFace !== 3 ) {
 					throw new Error('stl-parser: Something isn\'t right with the vertices of face number ' + faceCounter);
 				}
+				/* c8 ignore stop */
 
 				faceCounter++;
 			}
@@ -259,7 +265,6 @@ class _STLMesh {
 		for (let offset = 0; offset < 5; offset++) {
 			// If "solid" text is matched to the current offset, declare it to be an ASCII STL.
 			if (_STLMesh._matchDataViewAt(solid, reader, offset)) return false;
-
 		}
 		// Couldn't find "solid" text at the beginning; it is binary STL.
 		return true;
@@ -288,20 +293,22 @@ class _STLMesh {
 		return this._vertices;
 	}
 
-	/* c8 ignore next */
+	/* c8 ignore start */
 	set vertices(vertices: Float32Array | number[]) {
 		throw new Error(`No vertices setter.`);
 	}
+	/* c8 ignore stop */
 
 	get faceIndices() {
 		if (!this._faceIndices) throw new Error(`stl-parser: Call STLMesh.mergeVertices() before trying to access faceIndices.`);
 		return this._faceIndices;
 	}
 
-	/* c8 ignore next */
+	/* c8 ignore start */
 	set faceIndices(faceIndices: Uint32Array) {
 		throw new Error(`No faceIndices setter.`);
 	}
+	/* c8 ignore stop */
 
 	/**
 	 * Merge coincident vertices and index faces.
@@ -336,10 +343,11 @@ class _STLMesh {
 		return this._edges;
 	}
 
-	/* c8 ignore next */
+	/* c8 ignore start */
 	set edges(edges: Uint32Array | number[]) {
 		throw new Error(`No edges setter.`);
 	}
+	/* c8 ignore stop */
 
 	/**
 	 * Returns the bounding box of the mesh.
@@ -352,10 +360,11 @@ class _STLMesh {
 		return this._boundingBox;
 	}
 
-	/* c8 ignore next */
+	/* c8 ignore start */
 	set boundingBox(boundingBox: { min: [number, number, number], max: [number, number, number] }) {
 		throw new Error(`No boundingBox setter.`);
 	}
+	/* c8 ignore stop */
 
 	/**
 	 * Scales vertex positions (in place) to unit bounding box and centers around origin.
