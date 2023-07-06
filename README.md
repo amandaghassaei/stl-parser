@@ -148,7 +148,9 @@ export default {
 
 ## License
 
-This work is licensed under an [MIT License](https://github.com/amandaghassaei/stl-parser/blob/main/LICENSE.txt).
+This work is licensed under an [MIT License](https://github.com/amandaghassaei/stl-parser/blob/main/LICENSE.txt).  It depends on the following:
+
+- [@amandaghassaei/3d-mesh-utils](https://www.npmjs.com/package/@amandaghassaei/3d-mesh-utils) - geometry processing utility functions for 3D meshes (MIT license)
 
 
 ## Related Libraries
