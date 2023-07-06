@@ -199,5 +199,16 @@ describe('stl-parser', () => {
 				expect(max).to.deep.equal([0.5, 0.5, 0.5]);
 			}
 		});
+		it('throws errors for invalid setters', () => {
+			const mesh = parseSTL(cubeAscii);
+			// @ts-ignore
+			expect(() => {mesh.vertices = new Float32Array(10)}).to.throw(Error, 'stl-parser: No vertices setter.');
+			// @ts-ignore
+			expect(() => {mesh.edges = new Uint32Array(10)}).to.throw(Error, 'stl-parser: No edges setter.');
+			// @ts-ignore
+			expect(() => {mesh.faceIndices = new Uint32Array(10)}).to.throw(Error, 'stl-parser: No faceIndices setter.');
+			// @ts-ignore
+			expect(() => {mesh.boundingBox = { min: [0, 0, 0], max: [24, 24, 24] }}).to.throw(Error, 'stl-parser: No boundingBox setter.')
+		});
 	});
 });

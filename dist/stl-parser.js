@@ -85,8 +85,8 @@ class _STLMesh {
         let defaultG = 0;
         let defaultB = 0;
         // let alpha: number;
-        // process STL header
-        // check for default color in header ("COLOR=rgba" sequence).
+        // Process STL header.
+        // Check for default color in header ("COLOR=rgba" sequence).
         for (let index = 0; index < 80 - 10; index++) {
             if ((reader.getUint32(index, false) == 0x434F4C4F /*COLO*/) &&
                 (reader.getUint8(index + 4) == 0x52 /*'R'*/) &&
@@ -165,11 +165,10 @@ class _STLMesh {
                     vertexCountPerFace++;
                 }
                 // Each face have to own THREE valid vertices
-                /* c8 ignore start */
+                /* c8 ignore next 3 */
                 if (vertexCountPerFace !== 3) {
                     throw new Error('stl-parser: Something isn\'t right with the vertices of face number ' + faceCounter);
                 }
-                /* c8 ignore stop */
                 faceCounter++;
             }
         }
@@ -214,7 +213,7 @@ class _STLMesh {
         if (typeof buffer === 'string') {
             const array_buffer = new Uint8Array(buffer.length);
             for (let i = 0; i < buffer.length; i++) {
-                array_buffer[i] = buffer.charCodeAt(i) & 0xff; // implicitly assumes little-endian
+                array_buffer[i] = buffer.charCodeAt(i) & 0xff; // implicitly assumes little-endian.
             }
             return array_buffer.buffer || array_buffer;
         }
@@ -231,21 +230,17 @@ class _STLMesh {
     get vertices() {
         return this._vertices;
     }
-    /* c8 ignore start */
     set vertices(vertices) {
-        throw new Error(`No vertices setter.`);
+        throw new Error(`stl-parser: No vertices setter.`);
     }
-    /* c8 ignore stop */
     get faceIndices() {
         if (!this._faceIndices)
             throw new Error(`stl-parser: Call STLMesh.mergeVertices() before trying to access faceIndices.`);
         return this._faceIndices;
     }
-    /* c8 ignore start */
     set faceIndices(faceIndices) {
-        throw new Error(`No faceIndices setter.`);
+        throw new Error(`stl-parser: No faceIndices setter.`);
     }
-    /* c8 ignore stop */
     /**
      * Merge coincident vertices and index faces.
      */
@@ -275,11 +270,9 @@ class _STLMesh {
         }
         return this._edges;
     }
-    /* c8 ignore start */
     set edges(edges) {
-        throw new Error(`No edges setter.`);
+        throw new Error(`stl-parser: No edges setter.`);
     }
-    /* c8 ignore stop */
     /**
      * Returns the bounding box of the mesh.
      */
@@ -290,11 +283,9 @@ class _STLMesh {
         }
         return this._boundingBox;
     }
-    /* c8 ignore start */
     set boundingBox(boundingBox) {
-        throw new Error(`No boundingBox setter.`);
+        throw new Error(`stl-parser: No boundingBox setter.`);
     }
-    /* c8 ignore stop */
     /**
      * Scales vertex positions (in place) to unit bounding box and centers around origin.
      */

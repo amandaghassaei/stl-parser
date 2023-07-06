@@ -28,7 +28,11 @@ npm install @amandaghassaei/stl-parser
 and import into your project:
 
 ```js
-import { parseSTL, loadSTL, loadSTLAsync } from '@amandaghassaei/stl-parser';
+import {
+  parseSTL,
+  loadSTL,
+  loadSTLAsync,
+} from '@amandaghassaei/stl-parser';
 ```
 
 ### Import into HTML
