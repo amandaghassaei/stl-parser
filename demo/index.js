@@ -133,8 +133,7 @@ function initWireframe(positionsAttribute, edges) {
 
 	// Add wireframe.
 	const geometry = new THREE.BufferGeometry();
-	geometry.setIndex(new THREE.BufferAttribute(
-		edges.constructor === Uint32Array ? edges : new Uint32Array(edges), 1));
+	geometry.setIndex(new THREE.BufferAttribute(edges, 1));
 	geometry.setAttribute('position', positionsAttribute);
 	const material = new THREE.LineBasicMaterial({ color: new THREE.Color(PARAMS.wireframe) });
 	const lines = new THREE.LineSegments(geometry, material);
@@ -154,8 +153,7 @@ function initThreeJSGeometry(stlMesh) {
 		${(edges.length / 2).toLocaleString()} edges`);
 
 	// Share positions attribute between meshes.
-	const positions = new Float32Array(vertices);
-	const positionsAttribute = new THREE.BufferAttribute(positions, 3);
+	const positionsAttribute = new THREE.BufferAttribute(vertices, 3);
 
 	mesh = initMesh(positionsAttribute, stlMesh);
 	wireframe = initWireframe(positionsAttribute, edges);
