@@ -5,6 +5,7 @@
 [![Build Size](https://img.shields.io/bundlephobia/min/@amandaghassaei/stl-parser)](https://bundlephobia.com/result?p=@amandaghassaei/stl-parser)
 [![NPM Downloads](https://img.shields.io/npm/dw/@amandaghassaei/stl-parser)](https://www.npmtrends.com/@amandaghassaei/stl-parser)
 [![License](https://img.shields.io/npm/l/@amandaghassaei/stl-parser)](https://github.com/amandaghassaei/stl-parser/blob/main/LICENSE.txt)
+![](https://img.shields.io/badge/Coverage-88%25-83A603.svg?prefix=$coverage$)
 
 Standalone module for loading and parsing binary/ASCII STL files – unit tested and written in TypeScript.  Parsing code based on [Threejs STLLoader](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/STLLoader.js).
 
@@ -32,12 +33,12 @@ import { parseSTL, loadSTL, loadSTLAsync } from '@amandaghassaei/stl-parser';
 
 ### Import into HTML
 
-Import [stl-parser.js](https://github.com/amandaghassaei/stl-parser/blob/main/dist/stl-parser.js) directly into your html:
+Import [stl-parser.min.js](https://github.com/amandaghassaei/stl-parser/blob/main/bundle/stl-parser.min.js) directly into your html:
 
 ```html
 <html>
   <head>
-    <script src="stl-parser.js"></script>
+    <script src="stl-parser.min.js"></script>
   </head>
   <body>
   </body>
@@ -52,6 +53,8 @@ const { parseSTL, loadSTL, loadSTLAsync } = STLParserLib;
 
 
 ## Use
+
+Full docs at [docs](https://github.com/amandaghassaei/stl-parser/blob/main/docs/).
 
 ```js
 // Load and parse the .stl file using url or File object.

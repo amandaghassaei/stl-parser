@@ -1,15 +1,27 @@
 import typescript from '@rollup/plugin-typescript';
+import resolve from '@rollup/plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
 
 export default {
   input: 'src/stl-parser.ts',
   output: {
-    file: 'dist/stl-parser.js',
+    file: 'bundle/stl-parser.min.js',
     format: 'umd',
     name: 'STLParserLib',
     sourcemap: true,
+	plugins: [
+		terser(),
+	],
   },
   plugins: [
-    typescript(),
+	resolve({
+		browser: true,
+	}),
+    typescript({
+		sourceMap: true,
+		inlineSources: true,
+		outDir: './bundle',
+	}),
   ],
   external: ['fs'],
 };

@@ -1,10 +1,11 @@
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
-import { parseSTL, loadSTL, loadSTLAsync, STLMesh } from '../';
+import { parseSTL, loadSTL, loadSTLAsync, STLMesh } from '../src/stl-parser';
 
+import { cubeString } from './stl/cubeString';
 const cubeAscii = readFileSync('./test/stl/cubeAscii.stl');
 const cubeBinary = readFileSync('./test/stl/cubeBinary.stl');
-const { cubeString } = require('./stl/cubeString');
+
 
 describe('stl-parser', () => {
 	describe('parseSTL', () => {

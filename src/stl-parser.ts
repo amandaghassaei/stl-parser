@@ -1,3 +1,11 @@
+import {
+	calcBoundingBox,
+	scaleVerticesToUnitBoundingBox,
+	calcEdgesFromIndexedFaces,
+	calcEdgesFromNonIndexedFaces,
+	mergeVertices,
+} from '@amandaghassaei/3d-mesh-utils';
+
 /**
  * Synchronously parse an already loaded .stl file buffer or string.
  */
@@ -75,7 +83,7 @@ class _STLMesh {
 	readonly faceColors?: Float32Array;
 	private _faceIndices?: Uint32Array;
 	private _edges?: Uint32Array | number[];
-	private _boundingBox?: { min:number[], max: number[] };
+	private _boundingBox?: { min: [number, number, number], max: [number, number, number] };
 
 	constructor(data: Buffer | ArrayBuffer | string) {
 		if (typeof data !== 'string') {
@@ -280,6 +288,7 @@ class _STLMesh {
 		return this._vertices;
 	}
 
+	/* c8 ignore next */
 	set vertices(vertices: Float32Array | number[]) {
 		throw new Error(`No vertices setter.`);
 	}
@@ -289,6 +298,7 @@ class _STLMesh {
 		return this._faceIndices;
 	}
 
+	/* c8 ignore next */
 	set faceIndices(faceIndices: Uint32Array) {
 		throw new Error(`No faceIndices setter.`);
 	}
@@ -297,32 +307,10 @@ class _STLMesh {
 	 * Merge coincident vertices and index faces.
 	 */
 	mergeVertices() {
-		const { vertices } = this;
-		const numFaces = vertices.length / 9;
-		const verticesMerged: number[] = [];
-		const facesIndexed = new Uint32Array(numFaces * 3);
-		// Use hash to merge vertices.
-		const vertexHash: { [key: string]: number } = {};
-		for (let i = 0; i < numFaces; i++) {
-			for (let j = 0; j < 3; j++) {
-				const vertexIndex = 9 * i + 3 * j;
-				const faceIndex = 3 * i;
-				const positionX = vertices[vertexIndex];
-				const positionY = vertices[vertexIndex + 1];
-				const positionZ = vertices[vertexIndex + 2];
-				const key = `${positionX},${positionY},${positionZ}`;
-				let mergedVertexIndex = vertexHash[key];
-				if (mergedVertexIndex !== undefined) {
-					facesIndexed[faceIndex + j] = mergedVertexIndex;
-				} else {
-					// Add new vertex.
-					mergedVertexIndex = verticesMerged.length / 3;
-					facesIndexed[faceIndex + j] = mergedVertexIndex;
-					vertexHash[key] = mergedVertexIndex;
-					verticesMerged.push(positionX, positionY, positionZ);
-				}
-			}
-		}
+		const {
+			verticesMerged,
+			facesIndexed,
+		} = mergeVertices(this);
 		this._vertices = verticesMerged;
 		this._faceIndices = facesIndexed;
 		delete this._edges; // Invalidate previously calculated edges.
@@ -334,45 +322,21 @@ class _STLMesh {
 	 */
 	get edges() {
 		if (!this._edges) {
-			const { vertices, _faceIndices } = this;
-			const numVertices = vertices.length / 3;
+			const { _faceIndices } = this;
+			let edges: Uint32Array | number[];
 			if (_faceIndices) {
 				// Handle edges on indexed faces.
-				const numFaces = _faceIndices.length / 3;
-				// Use hash to calc edges.
-				const edgesHash : { [key: string]: boolean } = {};
-				const edges: number[] = [];
-				for (let i = 0; i < numFaces; i++) {
-					for (let j = 0; j < 3; j++) {
-						const index1 = _faceIndices[3 * i + j];
-						const index2 = _faceIndices[3 * i + (j + 1) % 3];
-						const key = `${Math.min(index1, index2)},${Math.max(index1, index2)}`;
-						// Only add each edge once.
-						if (edgesHash[key] === undefined) {
-							edgesHash[key] = true;
-							edges.push(index1, index2);
-						}
-					}
-				}
-				this._edges = edges; // Cache result.
+				edges = calcEdgesFromIndexedFaces(this);
 			} else {
 				// Vertices are grouped in sets of three to a face.
-				const numFaces = numVertices / 3;
-				const edges = new Uint32Array(6 * numFaces);
-				for (let i = 0; i < numFaces; i ++) {
-					const faceIndex = 3 * i;
-					for (let j = 0; j < 3; j++) {
-						const edgeIndex = 6 * i + 2 * j;
-						edges[edgeIndex] = faceIndex + j;
-						edges[edgeIndex + 1] = faceIndex + (j + 1) % 3;
-					}
-				}
-				this._edges = edges; // Cache result.
+				edges = calcEdgesFromNonIndexedFaces(this);
 			}
+			this._edges = edges; // Cache result.
 		}
 		return this._edges;
 	}
 
+	/* c8 ignore next */
 	set edges(edges: Uint32Array | number[]) {
 		throw new Error(`No edges setter.`);
 	}
@@ -382,27 +346,14 @@ class _STLMesh {
 	 */
 	get boundingBox() {
 		if (!this._boundingBox) {
-			const { vertices } = this;
-			const numVertices = vertices.length / 3;
-			const min = [Infinity, Infinity, Infinity];
-			const max = [-Infinity, -Infinity, -Infinity];
-			for (let i = 0; i < numVertices; i++) {
-				min[0] = Math.min(min[0], vertices[3 * i]);
-				min[1] = Math.min(min[1], vertices[3 * i + 1]);
-				min[2] = Math.min(min[2], vertices[3 * i + 2]);
-				max[0] = Math.max(max[0], vertices[3 * i]);
-				max[1] = Math.max(max[1], vertices[3 * i + 1]);
-				max[2] = Math.max(max[2], vertices[3 * i + 2]);
-			}
 			 // Cache result.
-			this._boundingBox = {
-				min, max,
-			};
+			this._boundingBox = calcBoundingBox(this);
 		}
 		return this._boundingBox;
 	}
 
-	set boundingBox(boundingBox: { min: number[], max: number[] }) {
+	/* c8 ignore next */
+	set boundingBox(boundingBox: { min: [number, number, number], max: [number, number, number] }) {
 		throw new Error(`No boundingBox setter.`);
 	}
 
@@ -410,18 +361,8 @@ class _STLMesh {
 	 * Scales vertex positions (in place) to unit bounding box and centers around origin.
 	 */
 	scaleVerticesToUnitBoundingBox() {
-		const { vertices, boundingBox } = this;
-		const { min, max } = boundingBox;
-		const diff = [max[0] - min[0], max[1] - min[1], max[2] - min[2]];
-		const center = [(max[0] + min[0]) / 2, (max[1] + min[1]) / 2, (max[2] + min[2]) / 2];
-		const scale = Math.max(diff[0], diff[1], diff[2]);
-		const numNodes = vertices.length / 3;
-		for (let i = 0; i < numNodes; i++) {
-			for (let j = 0; j < 3; j++) {
-				// Uniform scale.
-				vertices[3 * i + j] = (vertices[3 * i + j] - center[j]) / scale;
-			}
-		}
+		// Scale vertices to bounding box (in place).
+		scaleVerticesToUnitBoundingBox(this);
 		delete this._boundingBox; // Invalidate previously calculated bounding box.
 		return this;
 	}
