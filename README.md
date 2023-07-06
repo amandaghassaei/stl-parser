@@ -127,10 +127,10 @@ export default {
 // vite.config.js
 export default {
   build: {
-		rollupOptions: {
-			external: ['fs'],
-		},
-	}
+    rollupOptions: {
+      external: ['fs'],
+    },
+  }
   ...
 }
 ```
