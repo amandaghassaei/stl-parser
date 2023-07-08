@@ -1,8 +1,8 @@
 import {
 	calcBoundingBox,
 	scaleVerticesToUnitBoundingBox,
-	calcEdgesFromIndexedFaces,
-	calcEdgesFromNonIndexedFaces,
+	calcEdgeIndicesFromIndexedFaces,
+	calcEdgeIndicesFromNonIndexedFaces,
 	mergeVertices,
 } from '@amandaghassaei/3d-mesh-utils';
 
@@ -71,7 +71,7 @@ export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => v
 export type STLMesh = {
 	readonly vertices: Float32Array;
 	readonly faceNormals: Float32Array;
-	readonly edges: Uint32Array;
+	readonly edgeIndices: Uint32Array;
 	readonly faceColors?: Float32Array;
 	readonly faceIndices: Uint32Array;
 	readonly boundingBox: { min: [number, number, number], max: [number, number, number] };
@@ -84,9 +84,9 @@ export type STLMesh = {
 class _STLMesh {
 	private _vertices: Float32Array;
 	readonly faceNormals: Float32Array;
+	private _edgeIndices?: Uint32Array;
 	readonly faceColors?: Float32Array;
 	private _faceIndices?: Uint32Array;
-	private _edges?: Uint32Array;
 	private _boundingBox?: { min: [number, number, number], max: [number, number, number] };
 
 	constructor(data: Buffer | ArrayBuffer | string) {
@@ -301,7 +301,7 @@ class _STLMesh {
 	}
 
 	get faceIndices() {
-		if (!this._faceIndices) throw new Error(`stl-parser: Call STLMesh.mergeVertices() before trying to access faceIndices.`);
+		if (!this._faceIndices) throw new Error(`stl-parser: STL vertices are non-indexed by default, call STLMesh.mergeVertices() before trying to access faceIndices.`);
 		return this._faceIndices;
 	}
 
@@ -319,31 +319,31 @@ class _STLMesh {
 		} = mergeVertices(this);
 		this._vertices = new Float32Array(verticesMerged);
 		this._faceIndices = facesIndexed;
-		delete this._edges; // Invalidate previously calculated edges.
+		delete this._edgeIndices; // Invalidate previously calculated edges.
 		return this;
 	}
 
 	/**
 	 * Returns the edges in the stl data (without duplicates).
 	 */
-	get edges() {
-		if (!this._edges) {
+	get edgeIndices() {
+		if (!this._edgeIndices) {
 			const { _faceIndices } = this;
-			let edges: Uint32Array;
+			let edgeIndices: Uint32Array;
 			if (_faceIndices) {
 				// Handle edges on indexed faces.
-				edges = new Uint32Array(calcEdgesFromIndexedFaces(this));
+				edgeIndices = new Uint32Array(calcEdgeIndicesFromIndexedFaces(this));
 			} else {
 				// Vertices are grouped in sets of three to a face.
-				edges = calcEdgesFromNonIndexedFaces(this);
+				edgeIndices = calcEdgeIndicesFromNonIndexedFaces(this);
 			}
-			this._edges = edges; // Cache result.
+			this._edgeIndices = edgeIndices; // Cache result.
 		}
-		return this._edges;
+		return this._edgeIndices;
 	}
 
-	set edges(edges: Uint32Array) {
-		throw new Error(`stl-parser: No edges setter.`);
+	set edgeIndices(edgeIndices: Uint32Array) {
+		throw new Error(`stl-parser: No edgeIndices setter.`);
 	}
 
 	/**

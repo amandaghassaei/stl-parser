@@ -125,10 +125,10 @@ describe('stl-parser', () => {
 				2, 7, 5, 1, 0, 6, 6, 0, 4
 			]));			
 		});
-		it('calculates edges', () => {
+		it('calculates edgeIndices', () => {
 			{
 				const mesh = parseSTL(cubeAscii);
-				expect(mesh.edges).to.deep.equal(new Uint32Array([
+				expect(mesh.edgeIndices).to.deep.equal(new Uint32Array([
 					0,  1,  1,  2,  2,  0,  3,  4,  4,  5,  5,  3,
 					6,  7,  7,  8,  8,  6,  9, 10, 10, 11, 11,  9,
 					12, 13, 13, 14, 14, 12, 15, 16, 16, 17, 17, 15,
@@ -136,19 +136,19 @@ describe('stl-parser', () => {
 					24, 25, 25, 26, 26, 24, 27, 28, 28, 29, 29, 27,
 					30, 31, 31, 32, 32, 30, 33, 34, 34, 35, 35, 33
 				]));
-				expect(mesh.edges.length).to.equal(mesh.vertices.length / 3 * 2);
+				expect(mesh.edgeIndices.length).to.equal(mesh.vertices.length / 3 * 2);
 				mesh.mergeVertices();
-				expect(mesh.edges).to.deep.equal(new Uint32Array([
+				expect(mesh.edgeIndices).to.deep.equal(new Uint32Array([
 					0, 1, 1, 2, 2, 0, 1, 3, 3,
 					2, 4, 0, 0, 5, 5, 4, 2, 5,
 					6, 4, 4, 7, 7, 6, 5, 7, 1,
 					6, 6, 3, 7, 3, 7, 2, 0, 6
 				]));
-				expect(mesh.edges.length).to.equal(mesh.faceIndices.length);
+				expect(mesh.edgeIndices.length).to.equal(mesh.faceIndices.length);
 			}
 			{
 				const mesh = parseSTL(cubeBinary);
-				expect(mesh.edges).to.deep.equal(new Uint32Array([
+				expect(mesh.edgeIndices).to.deep.equal(new Uint32Array([
 					0,  1,  1,  2,  2,  0,  3,  4,  4,  5,  5,  3,
 					6,  7,  7,  8,  8,  6,  9, 10, 10, 11, 11,  9,
 					12, 13, 13, 14, 14, 12, 15, 16, 16, 17, 17, 15,
@@ -156,15 +156,15 @@ describe('stl-parser', () => {
 					24, 25, 25, 26, 26, 24, 27, 28, 28, 29, 29, 27,
 					30, 31, 31, 32, 32, 30, 33, 34, 34, 35, 35, 33
 				]));
-				expect(mesh.edges.length).to.equal(mesh.vertices.length / 3 * 2);
+				expect(mesh.edgeIndices.length).to.equal(mesh.vertices.length / 3 * 2);
 				mesh.mergeVertices();
-				expect(mesh.edges).to.deep.equal(new Uint32Array([
+				expect(mesh.edgeIndices).to.deep.equal(new Uint32Array([
 					0, 1, 1, 2, 2, 0, 1, 3, 3,
 					2, 4, 0, 0, 5, 5, 4, 2, 5,
 					6, 4, 4, 7, 7, 6, 5, 7, 1,
 					6, 6, 3, 7, 3, 7, 2, 0, 6
 				]));
-				expect(mesh.edges.length).to.equal(mesh.faceIndices.length);
+				expect(mesh.edgeIndices.length).to.equal(mesh.faceIndices.length);
 			}
 		});
 		it('calculates bounding box', () => {
@@ -204,7 +204,7 @@ describe('stl-parser', () => {
 			// @ts-ignore
 			expect(() => {mesh.vertices = new Float32Array(10)}).to.throw(Error, 'stl-parser: No vertices setter.');
 			// @ts-ignore
-			expect(() => {mesh.edges = new Uint32Array(10)}).to.throw(Error, 'stl-parser: No edges setter.');
+			expect(() => {mesh.edgeIndices = new Uint32Array(10)}).to.throw(Error, 'stl-parser: No edgeIndices setter.');
 			// @ts-ignore
 			expect(() => {mesh.faceIndices = new Uint32Array(10)}).to.throw(Error, 'stl-parser: No faceIndices setter.');
 			// @ts-ignore

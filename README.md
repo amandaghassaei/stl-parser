@@ -67,7 +67,7 @@ loadSTL('./teapot.stl', (mesh) => {
     vertices,
     faceNormals,
     faceColors,
-    edges,
+    edgeIndices,
     boundingBox,
   } = mesh;
 });
@@ -98,7 +98,7 @@ endsolid`);
 - `vertices` is a Float32Array of length 3 * numVertices containing a flat list of vertex positions in the following order `[x0, y0, z0, x1, y1, z1, ...]`.  Each group of three vertices make up a triangle in the .stl mesh – by default, vertices are not shared between triangles in the .stl format, see `mergeVertices()` below.
 - `faceNormals` is a Float32Array of length 3 * numFaces containing a flat list of face normals in the following order `[nx0, ny0, nz0, nx1, ny1, nz1, ...]`
 - If available, `faceColors` is a Float32Array of length 3 * numFaces containing a flat list of face colors in the following order `[r0, g0, b0, r1, g1, b1, ...]`.
-- `edges` is a Uint32Array containing all unique edges (expressed as pairs of vertex indices) in the mesh in the following order: `[e01, e02, e11, e12, ...]`.  `edges` is calculated when queried and then cached.
+- `edgeIndices` is a Uint32Array containing all unique edgeIndices (expressed as pairs of vertex indices) in the mesh in the following order: `[e01, e02, e11, e12, ...]`.  `edgeIndices` is calculated when queried and then cached.
 - `boundingBox` returns the min and max of the mesh's bounding box in the form: `{ min: [x, y, z], max: [x, y, z] }`.  `boundingBox` is calculated when queried and then cached.
 
 

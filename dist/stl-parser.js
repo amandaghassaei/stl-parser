@@ -1,4 +1,4 @@
-import { calcBoundingBox, scaleVerticesToUnitBoundingBox, calcEdgesFromIndexedFaces, calcEdgesFromNonIndexedFaces, mergeVertices, } from '@amandaghassaei/3d-mesh-utils';
+import { calcBoundingBox, scaleVerticesToUnitBoundingBox, calcEdgeIndicesFromIndexedFaces, calcEdgeIndicesFromNonIndexedFaces, mergeVertices, } from '@amandaghassaei/3d-mesh-utils';
 /**
  * Synchronously parse an already loaded .stl file buffer or string.
  */
@@ -235,7 +235,7 @@ class _STLMesh {
     }
     get faceIndices() {
         if (!this._faceIndices)
-            throw new Error(`stl-parser: Call STLMesh.mergeVertices() before trying to access faceIndices.`);
+            throw new Error(`stl-parser: STL vertices are non-indexed by default, call STLMesh.mergeVertices() before trying to access faceIndices.`);
         return this._faceIndices;
     }
     set faceIndices(faceIndices) {
@@ -248,30 +248,30 @@ class _STLMesh {
         const { verticesMerged, facesIndexed, } = mergeVertices(this);
         this._vertices = new Float32Array(verticesMerged);
         this._faceIndices = facesIndexed;
-        delete this._edges; // Invalidate previously calculated edges.
+        delete this._edgeIndices; // Invalidate previously calculated edges.
         return this;
     }
     /**
      * Returns the edges in the stl data (without duplicates).
      */
-    get edges() {
-        if (!this._edges) {
+    get edgeIndices() {
+        if (!this._edgeIndices) {
             const { _faceIndices } = this;
-            let edges;
+            let edgeIndices;
             if (_faceIndices) {
                 // Handle edges on indexed faces.
-                edges = new Uint32Array(calcEdgesFromIndexedFaces(this));
+                edgeIndices = new Uint32Array(calcEdgeIndicesFromIndexedFaces(this));
             }
             else {
                 // Vertices are grouped in sets of three to a face.
-                edges = calcEdgesFromNonIndexedFaces(this);
+                edgeIndices = calcEdgeIndicesFromNonIndexedFaces(this);
             }
-            this._edges = edges; // Cache result.
+            this._edgeIndices = edgeIndices; // Cache result.
         }
-        return this._edges;
+        return this._edgeIndices;
     }
-    set edges(edges) {
-        throw new Error(`stl-parser: No edges setter.`);
+    set edgeIndices(edgeIndices) {
+        throw new Error(`stl-parser: No edgeIndices setter.`);
     }
     /**
      * Returns the bounding box of the mesh.

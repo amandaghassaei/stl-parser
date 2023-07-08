@@ -14,7 +14,7 @@ export declare function loadSTL(urlOrFile: string | File, callback: (mesh: STLMe
 export type STLMesh = {
     readonly vertices: Float32Array;
     readonly faceNormals: Float32Array;
-    readonly edges: Uint32Array;
+    readonly edgeIndices: Uint32Array;
     readonly faceColors?: Float32Array;
     readonly faceIndices: Uint32Array;
     readonly boundingBox: {
