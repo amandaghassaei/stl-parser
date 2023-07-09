@@ -21,8 +21,8 @@ export function loadSTLAsync(urlOrFile) {
 export function loadSTL(urlOrFile, callback) {
     if (typeof urlOrFile === 'string') {
         // Made this compatible with Node and the browser, maybe there is a better way?
+        /* c8 ignore start */
         if (typeof window !== 'undefined') {
-            /* c8 ignore start */
             // Browser.
             // Load the file with XMLHttpRequest.
             const request = new XMLHttpRequest();
@@ -44,9 +44,9 @@ export function loadSTL(urlOrFile, callback) {
                 callback(parseSTL(buffer));
             });
         }
+        /* c8 ignore start */
     }
     else {
-        /* c8 ignore start */
         // We only ever hit this in the browser.
         // Load the file with FileReader.
         const reader = new FileReader();

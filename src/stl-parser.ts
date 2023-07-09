@@ -30,8 +30,8 @@ export function loadSTLAsync(urlOrFile: string | File) {
 export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => void) {
 	if (typeof urlOrFile === 'string') {
 		// Made this compatible with Node and the browser, maybe there is a better way?
+		/* c8 ignore start */
 		if (typeof window !== 'undefined') {
-			/* c8 ignore start */
 			// Browser.
 			// Load the file with XMLHttpRequest.
 			const request = new XMLHttpRequest();
@@ -43,7 +43,7 @@ export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => v
 				callback(mesh);
 			};
 			request.send();
-			/* c8 ignore stop */
+		/* c8 ignore stop */
 		} else {
 			// Nodejs.
 			// Call the callback function with the parsed mesh data.
@@ -52,8 +52,8 @@ export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => v
 				callback(parseSTL(buffer));
 			});
 		}
+	/* c8 ignore start */
 	} else {
-		/* c8 ignore start */
 		// We only ever hit this in the browser.
 		// Load the file with FileReader.
 		const reader = new FileReader();
