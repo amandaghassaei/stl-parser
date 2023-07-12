@@ -1,4 +1,4 @@
-import { calcBoundingBox, scaleVerticesToUnitBoundingBox, calcEdgeIndicesFromIndexedFaces, calcEdgeIndicesFromNonIndexedFaces, mergeVertices, } from '@amandaghassaei/3d-mesh-utils';
+import { calcBoundingBox, scaleVerticesToUnitBoundingBox, calcEdgesIndicesFromIndexedFaces, calcEdgesIndicesFromNonIndexedFaces, mergeVertices, } from '@amandaghassaei/3d-mesh-utils';
 /**
  * Synchronously parse an already loaded .stl file buffer or string.
  */
@@ -260,11 +260,11 @@ class _STLMesh {
             let edgeIndices;
             if (_facesIndices) {
                 // Handle edges on indexed faces.
-                edgeIndices = new Uint32Array(calcEdgeIndicesFromIndexedFaces(this));
+                edgeIndices = new Uint32Array(calcEdgesIndicesFromIndexedFaces(this));
             }
             else {
                 // Vertices are grouped in sets of three to a face.
-                edgeIndices = calcEdgeIndicesFromNonIndexedFaces(this);
+                edgeIndices = calcEdgesIndicesFromNonIndexedFaces(this);
             }
             this._edgeIndices = edgeIndices; // Cache result.
         }
