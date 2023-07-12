@@ -127,13 +127,13 @@ function initMesh(positionsAttribute, stlMesh) {
 	return threeMesh;
 }
 
-function initWireframe(positionsAttribute, edgeIndices) {
+function initWireframe(positionsAttribute, edgesIndices) {
 	// Remove previous wireframe.
 	if (wireframe) removeThreeObject(wireframe);
 
 	// Add wireframe.
 	const geometry = new THREE.BufferGeometry();
-	geometry.setIndex(new THREE.BufferAttribute(edgeIndices, 1));
+	geometry.setIndex(new THREE.BufferAttribute(edgesIndices, 1));
 	geometry.setAttribute('position', positionsAttribute);
 	const material = new THREE.LineBasicMaterial({ color: new THREE.Color(PARAMS.wireframe) });
 	const lines = new THREE.LineSegments(geometry, material);
@@ -145,18 +145,18 @@ function initThreeJSGeometry(stlMesh) {
 	if (PARAMS.mergeVertices) stlMesh.mergeVertices();
 	const {
 		vertices,
-		edgeIndices,
+		edgesIndices,
 	} = stlMesh;
 
 	setInfo(`${(vertices.length / 3).toLocaleString()} vertices<br/>
 		${(PARAMS.mergeVertices ? stlMesh.facesIndices.length / 3 : vertices.length / 9).toLocaleString()} faces<br/>
-		${(edgeIndices.length / 2).toLocaleString()} edges`);
+		${(edgesIndices.length / 2).toLocaleString()} edges`);
 
 	// Share positions attribute between meshes.
 	const positionsAttribute = new THREE.BufferAttribute(vertices, 3);
 
 	mesh = initMesh(positionsAttribute, stlMesh);
-	wireframe = initWireframe(positionsAttribute, edgeIndices);
+	wireframe = initWireframe(positionsAttribute, edgesIndices);
 
 	// Center and scale the positions attribute.
 	// Do this on one mesh and it will apply to all.

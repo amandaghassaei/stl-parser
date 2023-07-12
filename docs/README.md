@@ -25,9 +25,9 @@
 | Name | Type |
 | :------ | :------ |
 | `vertices` | `Float32Array` |
-| `faceNormals` | `Float32Array` |
-| `edgeIndices` | `Uint32Array` |
-| `faceColors?` | `Float32Array` |
+| `facesNormals` | `Float32Array` |
+| `edgesIndices` | `Uint32Array` |
+| `facesColors?` | `Float32Array` |
 | `facesIndices` | `Uint32Array` |
 | `boundingBox` | { `min`: [`number`, `number`, `number`] ; `max`: [`number`, `number`, `number`]  } |
 | `boundingBox.min` | [`number`, `number`, `number`] |

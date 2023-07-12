@@ -13,9 +13,9 @@ export declare function loadSTLAsync(urlOrFile: string | File): Promise<STLMesh>
 export declare function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => void): void;
 export type STLMesh = {
     readonly vertices: Float32Array;
-    readonly faceNormals: Float32Array;
-    readonly edgeIndices: Uint32Array;
-    readonly faceColors?: Float32Array;
+    readonly facesNormals: Float32Array;
+    readonly edgesIndices: Uint32Array;
+    readonly facesColors?: Float32Array;
     readonly facesIndices: Uint32Array;
     readonly boundingBox: {
         min: [number, number, number];

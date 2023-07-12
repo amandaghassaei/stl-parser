@@ -70,9 +70,9 @@ export function loadSTL(urlOrFile: string | File, callback: (mesh: STLMesh) => v
 // Export just the type, keep the class private.
 export type STLMesh = {
 	readonly vertices: Float32Array;
-	readonly faceNormals: Float32Array;
-	readonly edgeIndices: Uint32Array;
-	readonly faceColors?: Float32Array;
+	readonly facesNormals: Float32Array;
+	readonly edgesIndices: Uint32Array;
+	readonly facesColors?: Float32Array;
 	readonly facesIndices: Uint32Array;
 	readonly boundingBox: { min: [number, number, number], max: [number, number, number] };
 	mergeVertices: () => STLMesh;
@@ -83,9 +83,9 @@ export type STLMesh = {
 // Define the STLMesh class.
 class _STLMesh {
 	private _vertices: Float32Array;
-	readonly faceNormals: Float32Array;
-	private _edgeIndices?: Uint32Array;
-	readonly faceColors?: Float32Array;
+	readonly facesNormals: Float32Array;
+	private _edgesIndices?: Uint32Array;
+	readonly facesColors?: Float32Array;
 	private _facesIndices?: Uint32Array;
 	private _boundingBox?: { min: [number, number, number], max: [number, number, number] };
 
@@ -94,17 +94,17 @@ class _STLMesh {
 			data = (data as Buffer).buffer ? new Uint8Array(data as Buffer).buffer : data;
 		}
 		const binData = _STLMesh._ensureBinary(data);
-		const { vertices, faceNormals, faceColors } = _STLMesh._isBinary(binData) ?
+		const { vertices, facesNormals, facesColors } = _STLMesh._isBinary(binData) ?
 			_STLMesh._parseBinary(binData) :
 			_STLMesh._parseASCII(_STLMesh._ensureString(data)) as {
 				vertices: Float32Array;
-				faceNormals: Float32Array;
-				faceColors?: Float32Array;
+				facesNormals: Float32Array;
+				facesColors?: Float32Array;
 			};
 		
 		this._vertices = vertices;
-		this.faceNormals = faceNormals;
-		this.faceColors = faceColors;
+		this.facesNormals = facesNormals;
+		this.facesColors = facesColors;
 	}
 
 	// Parsing code is based on:
@@ -114,7 +114,7 @@ class _STLMesh {
 		const numFaces = reader.getUint32(80, true);
 
 		let hasColors = false;
-		let faceColors: Float32Array | undefined;
+		let facesColors: Float32Array | undefined;
 		let defaultR = 0;
 		let defaultG = 0;
 		let defaultB = 0;
@@ -128,7 +128,7 @@ class _STLMesh {
 				(reader.getUint8(index + 5) == 0x3D /*'='*/)) {
 
 				hasColors = true;
-				faceColors = new Float32Array(numFaces * 3);
+				facesColors = new Float32Array(numFaces * 3);
 
 				defaultR = reader.getUint8(index + 6) / 255;
 				defaultG = reader.getUint8(index + 7) / 255;
@@ -141,26 +141,26 @@ class _STLMesh {
 		const faceLength = 12 * 4 + 2;
 
 		const vertices = new Float32Array(numFaces * 3 * 3);
-		const faceNormals = new Float32Array(numFaces * 3);
+		const facesNormals = new Float32Array(numFaces * 3);
 
 		for (let faceIndex = 0; faceIndex < numFaces; faceIndex++) {
 			const start = dataOffset + faceIndex * faceLength;
 			const index = 3 * faceIndex;
-			faceNormals[index] = reader.getFloat32(start, true);
-			faceNormals[index + 1] = reader.getFloat32(start + 4, true);
-			faceNormals[index + 2] = reader.getFloat32(start + 8, true);
+			facesNormals[index] = reader.getFloat32(start, true);
+			facesNormals[index + 1] = reader.getFloat32(start + 4, true);
+			facesNormals[index + 2] = reader.getFloat32(start + 8, true);
 
 			if (hasColors) {
 				const packedColor = reader.getUint16(start + 48, true);
 				if ((packedColor & 0x8000) === 0) {
 					// facet has its own unique color
-					faceColors![index] = (packedColor & 0x1F) / 31;
-					faceColors![index + 1] = ((packedColor >> 5) & 0x1F) / 31;
-					faceColors![index + 2] = ((packedColor >> 10) & 0x1F) / 31;
+					facesColors![index] = (packedColor & 0x1F) / 31;
+					facesColors![index + 1] = ((packedColor >> 5) & 0x1F) / 31;
+					facesColors![index + 2] = ((packedColor >> 10) & 0x1F) / 31;
 				} else {
-					faceColors![index] = defaultR;
-					faceColors![index + 1] = defaultG;
-					faceColors![index + 2] = defaultB;
+					facesColors![index] = defaultR;
+					facesColors![index + 1] = defaultG;
+					facesColors![index + 2] = defaultB;
 				}
 			}
 
@@ -175,8 +175,8 @@ class _STLMesh {
 
 		return {
 			vertices,
-			faceNormals,
-			faceColors,
+			facesNormals,
+			facesColors,
 		};
 	}
 
@@ -190,7 +190,7 @@ class _STLMesh {
 		const patternNormal = new RegExp('normal' + patternFloat + patternFloat + patternFloat, 'g');
 
 		const vertices: number[] = [];
-		const faceNormals: number[] = [];
+		const facesNormals: number[] = [];
 
 		let result;
 
@@ -206,7 +206,7 @@ class _STLMesh {
 				while ((result = patternNormal.exec(text)) !== null) {
 					// every face have to own ONE valid normal
 					if (normalCountPerFace > 0) throw new Error('stl-parser: Something isn\'t right with the normal of face number ' + faceCounter);
-					faceNormals.push(
+					facesNormals.push(
 						parseFloat(result[1]),
 						parseFloat(result[2]),
 						parseFloat(result[3]),
@@ -234,7 +234,7 @@ class _STLMesh {
 
 		return {
 			vertices: new Float32Array(vertices),
-			faceNormals: new Float32Array(faceNormals),
+			facesNormals: new Float32Array(facesNormals),
 		};
 	}
 
@@ -319,31 +319,31 @@ class _STLMesh {
 		} = mergeVertices(this);
 		this._vertices = new Float32Array(verticesMerged);
 		this._facesIndices = facesIndexed;
-		delete this._edgeIndices; // Invalidate previously calculated edges.
+		delete this._edgesIndices; // Invalidate previously calculated edges.
 		return this;
 	}
 
 	/**
 	 * Returns the edges in the stl data (without duplicates).
 	 */
-	get edgeIndices() {
-		if (!this._edgeIndices) {
+	get edgesIndices() {
+		if (!this._edgesIndices) {
 			const { _facesIndices } = this;
-			let edgeIndices: Uint32Array;
+			let edgesIndices: Uint32Array;
 			if (_facesIndices) {
 				// Handle edges on indexed faces.
-				edgeIndices = new Uint32Array(calcEdgesIndicesFromIndexedFaces(this));
+				edgesIndices = new Uint32Array(calcEdgesIndicesFromIndexedFaces(this));
 			} else {
 				// Vertices are grouped in sets of three to a face.
-				edgeIndices = calcEdgesIndicesFromNonIndexedFaces(this);
+				edgesIndices = calcEdgesIndicesFromNonIndexedFaces(this);
 			}
-			this._edgeIndices = edgeIndices; // Cache result.
+			this._edgesIndices = edgesIndices; // Cache result.
 		}
-		return this._edgeIndices;
+		return this._edgesIndices;
 	}
 
-	set edgeIndices(edgeIndices: Uint32Array) {
-		throw new Error(`stl-parser: No edgeIndices setter.`);
+	set edgesIndices(edgesIndices: Uint32Array) {
+		throw new Error(`stl-parser: No edgesIndices setter.`);
 	}
 
 	/**
