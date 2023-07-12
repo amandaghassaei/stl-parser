@@ -16,7 +16,7 @@ export type STLMesh = {
     readonly faceNormals: Float32Array;
     readonly edgeIndices: Uint32Array;
     readonly faceColors?: Float32Array;
-    readonly faceIndices: Uint32Array;
+    readonly facesIndices: Uint32Array;
     readonly boundingBox: {
         min: [number, number, number];
         max: [number, number, number];

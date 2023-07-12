@@ -109,7 +109,7 @@ function initMesh(positionsAttribute, stlMesh) {
 
 	// Create a buffer geometry from the position and index arrays.
 	const geometry = new THREE.BufferGeometry();
-	if (PARAMS.mergeVertices) geometry.setIndex(new THREE.BufferAttribute(stlMesh.faceIndices, 1));
+	if (PARAMS.mergeVertices) geometry.setIndex(new THREE.BufferAttribute(stlMesh.facesIndices, 1));
 	geometry.setAttribute('position', positionsAttribute);
 	geometry.computeVertexNormals();
 
@@ -149,7 +149,7 @@ function initThreeJSGeometry(stlMesh) {
 	} = stlMesh;
 
 	setInfo(`${(vertices.length / 3).toLocaleString()} vertices<br/>
-		${(PARAMS.mergeVertices ? stlMesh.faceIndices.length / 3 : vertices.length / 9).toLocaleString()} faces<br/>
+		${(PARAMS.mergeVertices ? stlMesh.facesIndices.length / 3 : vertices.length / 9).toLocaleString()} faces<br/>
 		${(edgeIndices.length / 2).toLocaleString()} edges`);
 
 	// Share positions attribute between meshes.

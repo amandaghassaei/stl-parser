@@ -113,12 +113,12 @@ describe('stl-parser', () => {
 				vertices,
 				faceNormals,
 				faceColors,
-				faceIndices,
+				facesIndices,
 			} = (await loadSTLAsync('./test/stl/cubeAscii.stl')).mergeVertices();
 			expect(vertices.length).to.equal(8 * 3);
 			expect(faceNormals.length).to.equal(12 * 3);
 			expect(faceColors).to.equal(undefined);
-			expect(faceIndices).to.deep.equal(new Uint32Array([
+			expect(facesIndices).to.deep.equal(new Uint32Array([
 				0, 1, 2, 2, 1, 3, 4, 0, 5,
 				5, 0, 2, 6, 4, 7, 7, 4, 5,
 				1, 6, 3, 3, 6, 7, 3, 7, 2,
@@ -144,7 +144,7 @@ describe('stl-parser', () => {
 					6, 4, 4, 7, 7, 6, 5, 7, 1,
 					6, 6, 3, 7, 3, 7, 2, 0, 6
 				]));
-				expect(mesh.edgeIndices.length).to.equal(mesh.faceIndices.length);
+				expect(mesh.edgeIndices.length).to.equal(mesh.facesIndices.length);
 			}
 			{
 				const mesh = parseSTL(cubeBinary);
@@ -164,7 +164,7 @@ describe('stl-parser', () => {
 					6, 4, 4, 7, 7, 6, 5, 7, 1,
 					6, 6, 3, 7, 3, 7, 2, 0, 6
 				]));
-				expect(mesh.edgeIndices.length).to.equal(mesh.faceIndices.length);
+				expect(mesh.edgeIndices.length).to.equal(mesh.facesIndices.length);
 			}
 		});
 		it('calculates bounding box', () => {
@@ -206,7 +206,7 @@ describe('stl-parser', () => {
 			// @ts-ignore
 			expect(() => {mesh.edgeIndices = new Uint32Array(10)}).to.throw(Error, 'stl-parser: No edgeIndices setter.');
 			// @ts-ignore
-			expect(() => {mesh.faceIndices = new Uint32Array(10)}).to.throw(Error, 'stl-parser: No faceIndices setter.');
+			expect(() => {mesh.facesIndices = new Uint32Array(10)}).to.throw(Error, 'stl-parser: No facesIndices setter.');
 			// @ts-ignore
 			expect(() => {mesh.boundingBox = { min: [0, 0, 0], max: [24, 24, 24] }}).to.throw(Error, 'stl-parser: No boundingBox setter.')
 		});

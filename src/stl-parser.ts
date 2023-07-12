@@ -73,7 +73,7 @@ export type STLMesh = {
 	readonly faceNormals: Float32Array;
 	readonly edgeIndices: Uint32Array;
 	readonly faceColors?: Float32Array;
-	readonly faceIndices: Uint32Array;
+	readonly facesIndices: Uint32Array;
 	readonly boundingBox: { min: [number, number, number], max: [number, number, number] };
 	mergeVertices: () => STLMesh;
 	scaleVerticesToUnitBoundingBox: () => STLMesh;
@@ -86,7 +86,7 @@ class _STLMesh {
 	readonly faceNormals: Float32Array;
 	private _edgeIndices?: Uint32Array;
 	readonly faceColors?: Float32Array;
-	private _faceIndices?: Uint32Array;
+	private _facesIndices?: Uint32Array;
 	private _boundingBox?: { min: [number, number, number], max: [number, number, number] };
 
 	constructor(data: Buffer | ArrayBuffer | string) {
@@ -300,13 +300,13 @@ class _STLMesh {
 		throw new Error(`stl-parser: No vertices setter.`);
 	}
 
-	get faceIndices() {
-		if (!this._faceIndices) throw new Error(`stl-parser: STL vertices are non-indexed by default, call STLMesh.mergeVertices() before trying to access faceIndices.`);
-		return this._faceIndices;
+	get facesIndices() {
+		if (!this._facesIndices) throw new Error(`stl-parser: STL vertices are non-indexed by default, call STLMesh.mergeVertices() before trying to access facesIndices.`);
+		return this._facesIndices;
 	}
 
-	set faceIndices(faceIndices: Uint32Array) {
-		throw new Error(`stl-parser: No faceIndices setter.`);
+	set facesIndices(facesIndices: Uint32Array) {
+		throw new Error(`stl-parser: No facesIndices setter.`);
 	}
 
 	/**
@@ -318,7 +318,7 @@ class _STLMesh {
 			facesIndexed,
 		} = mergeVertices(this);
 		this._vertices = new Float32Array(verticesMerged);
-		this._faceIndices = facesIndexed;
+		this._facesIndices = facesIndexed;
 		delete this._edgeIndices; // Invalidate previously calculated edges.
 		return this;
 	}
@@ -328,9 +328,9 @@ class _STLMesh {
 	 */
 	get edgeIndices() {
 		if (!this._edgeIndices) {
-			const { _faceIndices } = this;
+			const { _facesIndices } = this;
 			let edgeIndices: Uint32Array;
-			if (_faceIndices) {
+			if (_facesIndices) {
 				// Handle edges on indexed faces.
 				edgeIndices = new Uint32Array(calcEdgeIndicesFromIndexedFaces(this));
 			} else {

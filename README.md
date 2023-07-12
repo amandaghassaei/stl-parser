@@ -106,10 +106,10 @@ The mesh object returned by `parseSTL`, `loadSTL`, and `loadSTLAsync` also expos
 
 ```js
 mesh.mergeVertices().scaleVerticesToUnitBoundingBox();
-const { faceIndices } = mesh;
+const { facesIndices } = mesh;
 ```
 
-- `STLMesh.mergeVertices()` merges coincident vertices and adds a `faceIndices` array to the mesh object.  `faceIndices` has length 3 * numFaces and contains a flat list of triangle face vertex indices in the following order: `[v01, v02, v03, v11, v12, v13, ...]`.
+- `STLMesh.mergeVertices()` merges coincident vertices and adds a `facesIndices` array to the mesh object.  `facesIndices` has length 3 * numFaces and contains a flat list of triangle face vertex indices in the following order: `[v01, v02, v03, v11, v12, v13, ...]`.
 - `STLMesh.scaleVerticesToUnitBoundingBox()` scales the `vertices` values (in place) to fit inside a unit box centered around the origin.
 
 

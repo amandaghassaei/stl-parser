@@ -233,13 +233,13 @@ class _STLMesh {
     set vertices(vertices) {
         throw new Error(`stl-parser: No vertices setter.`);
     }
-    get faceIndices() {
-        if (!this._faceIndices)
-            throw new Error(`stl-parser: STL vertices are non-indexed by default, call STLMesh.mergeVertices() before trying to access faceIndices.`);
-        return this._faceIndices;
+    get facesIndices() {
+        if (!this._facesIndices)
+            throw new Error(`stl-parser: STL vertices are non-indexed by default, call STLMesh.mergeVertices() before trying to access facesIndices.`);
+        return this._facesIndices;
     }
-    set faceIndices(faceIndices) {
-        throw new Error(`stl-parser: No faceIndices setter.`);
+    set facesIndices(facesIndices) {
+        throw new Error(`stl-parser: No facesIndices setter.`);
     }
     /**
      * Merge coincident vertices and index faces.
@@ -247,7 +247,7 @@ class _STLMesh {
     mergeVertices() {
         const { verticesMerged, facesIndexed, } = mergeVertices(this);
         this._vertices = new Float32Array(verticesMerged);
-        this._faceIndices = facesIndexed;
+        this._facesIndices = facesIndexed;
         delete this._edgeIndices; // Invalidate previously calculated edges.
         return this;
     }
@@ -256,9 +256,9 @@ class _STLMesh {
      */
     get edgeIndices() {
         if (!this._edgeIndices) {
-            const { _faceIndices } = this;
+            const { _facesIndices } = this;
             let edgeIndices;
-            if (_faceIndices) {
+            if (_facesIndices) {
                 // Handle edges on indexed faces.
                 edgeIndices = new Uint32Array(calcEdgeIndicesFromIndexedFaces(this));
             }

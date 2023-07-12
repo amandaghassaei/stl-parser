@@ -28,7 +28,7 @@
 | `faceNormals` | `Float32Array` |
 | `edgeIndices` | `Uint32Array` |
 | `faceColors?` | `Float32Array` |
-| `faceIndices` | `Uint32Array` |
+| `facesIndices` | `Uint32Array` |
 | `boundingBox` | { `min`: [`number`, `number`, `number`] ; `max`: [`number`, `number`, `number`]  } |
 | `boundingBox.min` | [`number`, `number`, `number`] |
 | `boundingBox.max` | [`number`, `number`, `number`] |

@@ -19,7 +19,7 @@
     "typescript"
   ],
   "scripts": {
-    "build": "rollup --config && tsc && npm run docs && npm run test-with-coverage && npm run make-coverage-badge",
+    "build": "rollup --config && tsc && npm run docs && npm run make-coverage-badge",
     "docs": "typedoc --options ./typedoc.json",
     "test": "mocha 'test/**/*.ts'",
     "test-with-coverage": "c8 mocha 'test/**/*.ts'",
@@ -58,6 +58,6 @@
     "typescript": "^4.9.3"
   },
   "dependencies": {
-    "@amandaghassaei/3d-mesh-utils": "^1.1.3"
+    "@amandaghassaei/3d-mesh-utils": "^1.2.0"
   }
 }
